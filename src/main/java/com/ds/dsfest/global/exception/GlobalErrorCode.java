@@ -20,12 +20,7 @@ public enum GlobalErrorCode implements BaseErrorCode {
   METHOD_NOT_ALLOWED("COMMON405", "허용되지 않는 HTTP 메서드입니다.", HttpStatus.METHOD_NOT_ALLOWED),
 
   // 입력 검증
-  INVALID_INPUT("VALID001", "입력값이 올바르지 않습니다.", HttpStatus.BAD_REQUEST),
-
-  // 어드민 인증
-  ADMIN_LOGIN_FAILED("ADMIN001", "아이디 또는 비밀번호가 올바르지 않습니다.", HttpStatus.UNAUTHORIZED),
-  ADMIN_TOKEN_INVALID("ADMIN002", "유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED),
-  ADMIN_TOKEN_EXPIRED("ADMIN003", "만료된 토큰입니다.", HttpStatus.UNAUTHORIZED);
+  INVALID_INPUT("VALID001", "입력값이 올바르지 않습니다.", HttpStatus.BAD_REQUEST);
 
   private final String code;
   private final String message;
