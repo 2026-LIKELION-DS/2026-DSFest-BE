@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 
 import com.ds.dsfest.domain.notice.constant.NoticeCategory;
@@ -48,5 +49,6 @@ public class Notice extends BaseEntity {
   private int viewCount;
 
   @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OrderBy("imageOrder ASC")
   private List<NoticeImage> images = new ArrayList<>();
 }
