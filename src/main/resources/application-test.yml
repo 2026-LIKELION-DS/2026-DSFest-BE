@@ -17,13 +17,11 @@ spring:
       enabled: false
 
 jwt:
-  secret: test-secret-key-that-is-at-least-256-bits-long-for-hs256-algorithm-padding
-  access-expiration: 3600000
-  refresh-expiration: 604800000
+  secret: dGVzdFNlY3JldEtleUZvclRlc3RpbmdEU0Zlc3QyMDI2UHVycG9zZXNPbmx5QUE=
 
 admin:
   username: test-admin
-  password: $2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy
+  password: $2a$10$Snc5cpoPC3iFCUL1xtg6Z.7UqNkV23kc2hrf.GUZz7YFJPuDaPg.a
 
 cloud:
   aws:

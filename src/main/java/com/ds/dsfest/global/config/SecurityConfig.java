@@ -15,9 +15,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.ds.dsfest.global.exception.GlobalErrorCode;
+import com.ds.dsfest.global.jwt.JwtAuthenticationFilter;
 import com.ds.dsfest.global.response.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,6 +32,7 @@ public class SecurityConfig {
 
   private final CorsConfigurationSource corsConfigurationSource;
   private final ObjectMapper objectMapper;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -57,8 +60,7 @@ public class SecurityConfig {
                     // 사용자 공개 엔드포인트
                     .anyRequest()
                     .permitAll())
-        // TODO: 어드민 JWT 필터 구현 후 아래 주석 해제 예정
-        // .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling(
             exception ->
                 exception

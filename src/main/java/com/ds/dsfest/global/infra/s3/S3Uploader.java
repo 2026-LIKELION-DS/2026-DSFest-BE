@@ -7,11 +7,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class S3Uploader {
@@ -49,6 +51,10 @@ public class S3Uploader {
    * @param fileUrl 삭제할 파일의 S3 URL
    */
   public void delete(String fileUrl) {
+    if (fileUrl == null || !fileUrl.contains(".amazonaws.com/")) {
+      log.warn("S3 삭제 건너뜀 - 유효하지 않은 URL: {}", fileUrl);
+      return;
+    }
     String key = extractKey(fileUrl);
 
     s3Client.deleteObject(
