@@ -113,12 +113,9 @@ public class NoticeService {
   private void replaceImages(Notice notice, List<String> keepUrls, List<MultipartFile> newImages)
       throws IOException {
     Set<String> existingUrls =
-        notice.getImages().stream()
-            .map(image -> image.getImageUrl())
-            .collect(Collectors.toSet());
+        notice.getImages().stream().map(image -> image.getImageUrl()).collect(Collectors.toSet());
 
-    List<String> validatedKeepUrls =
-        keepUrls.stream().filter(existingUrls::contains).toList();
+    List<String> validatedKeepUrls = keepUrls.stream().filter(existingUrls::contains).toList();
 
     List<String> urlsToDelete =
         existingUrls.stream().filter(url -> !validatedKeepUrls.contains(url)).toList();
