@@ -1,6 +1,9 @@
 package com.ds.dsfest.domain.notice.controller;
 
+import jakarta.validation.constraints.NotBlank;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ds.dsfest.domain.notice.dto.NoticeSearchResDto;
 import com.ds.dsfest.domain.notice.dto.UrgentNoticeResDto;
@@ -20,5 +23,6 @@ public interface NoticeControllerDocs {
   @Operation(
       summary = "공지 검색",
       description = "keyword로 제목·본문을 검색합니다. 결과가 없으면 results는 빈 배열, recommended에 조회수 상위 3개가 담깁니다.")
-  ResponseEntity<ApiResponse<NoticeSearchResDto>> searchNotices(String keyword);
+  ResponseEntity<ApiResponse<NoticeSearchResDto>> searchNotices(
+      @RequestParam @NotBlank String keyword);
 }

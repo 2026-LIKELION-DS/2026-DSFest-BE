@@ -43,7 +43,9 @@ public class GlobalExceptionHandler {
         .body(ApiResponse.onFailure(GlobalErrorCode.INVALID_INPUT, errorMessage));
   }
 
-  /** @Validated 파라미터 검증 실패 */
+  /**
+   * @Validated 파라미터 검증 실패
+   */
   @ExceptionHandler(ConstraintViolationException.class)
   public ResponseEntity<ApiResponse<String>> handleConstraintViolationException(
       ConstraintViolationException e) {
