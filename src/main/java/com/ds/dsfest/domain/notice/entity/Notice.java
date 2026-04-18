@@ -51,4 +51,33 @@ public class Notice extends BaseEntity {
   @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL, orphanRemoval = true)
   @OrderBy("imageOrder ASC")
   private List<NoticeImage> images = new ArrayList<>();
+
+  public static Notice create(
+      String title, String content, NoticeCategory category, boolean urgent) {
+    Notice notice = new Notice();
+    notice.title = title;
+    notice.content = content;
+    notice.category = category;
+    notice.urgent = urgent;
+    return notice;
+  }
+
+  public void update(String title, String content, NoticeCategory category, boolean urgent) {
+    this.title = title;
+    this.content = content;
+    this.category = category;
+    this.urgent = urgent;
+  }
+
+  public void clearUrgent() {
+    this.urgent = false;
+  }
+
+  public void addImage(String imageUrl, int order) {
+    this.images.add(NoticeImage.create(this, imageUrl, order));
+  }
+
+  public void clearImages() {
+    this.images.clear();
+  }
 }

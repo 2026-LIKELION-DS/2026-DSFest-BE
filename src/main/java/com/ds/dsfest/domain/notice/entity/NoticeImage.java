@@ -33,4 +33,12 @@ public class NoticeImage {
 
   @Column(nullable = false)
   private int imageOrder;
+
+  public static NoticeImage create(Notice notice, String imageUrl, int imageOrder) {
+    NoticeImage image = new NoticeImage();
+    image.notice = notice;
+    image.imageUrl = imageUrl;
+    image.imageOrder = imageOrder;
+    return image;
+  }
 }
