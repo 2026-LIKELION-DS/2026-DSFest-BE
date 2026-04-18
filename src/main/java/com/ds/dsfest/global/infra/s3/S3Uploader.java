@@ -49,6 +49,9 @@ public class S3Uploader {
    * @param fileUrl 삭제할 파일의 S3 URL
    */
   public void delete(String fileUrl) {
+    if (fileUrl == null || !fileUrl.contains(".amazonaws.com/")) {
+      return;
+    }
     String key = extractKey(fileUrl);
 
     s3Client.deleteObject(
