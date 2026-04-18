@@ -55,7 +55,7 @@ class AdminNoticeControllerTest {
   }
 
   @Test
-  @DisplayName("공지를 이미지 없이 작성하면 201을 반환한다")
+  @DisplayName("공지를 이미지 없이 작성하면 200을 반환한다")
   void createNotice_withoutImages_success() throws Exception {
     NoticeCreateReqDto req =
         new NoticeCreateReqDto("테스트 공지", NoticeCategory.ETC, false, "공지 내용입니다.");
@@ -180,7 +180,7 @@ class AdminNoticeControllerTest {
   }
 
   @Test
-  @DisplayName("공지를 삭제하면 204와 isSuccess true를 반환한다")
+  @DisplayName("공지를 삭제하면 200과 isSuccess true를 반환한다")
   void deleteNotice_success() throws Exception {
     Notice saved = noticeRepository.save(Notice.create("삭제할 공지", "내용", NoticeCategory.ETC, false));
 

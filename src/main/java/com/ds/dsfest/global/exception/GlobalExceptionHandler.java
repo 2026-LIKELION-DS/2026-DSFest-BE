@@ -2,6 +2,8 @@ package com.ds.dsfest.global.exception;
 
 import java.util.stream.Collectors;
 
+import jakarta.validation.ConstraintViolationException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -37,6 +39,19 @@ public class GlobalExceptionHandler {
             .map(FieldError::getDefaultMessage)
             .collect(Collectors.joining(", "));
     log.warn("ValidationException: {}", errorMessage);
+    return ResponseEntity.status(GlobalErrorCode.INVALID_INPUT.getStatus())
+        .body(ApiResponse.onFailure(GlobalErrorCode.INVALID_INPUT, errorMessage));
+  }
+
+  /** @Validated 파라미터 검증 실패 */
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<ApiResponse<String>> handleConstraintViolationException(
+      ConstraintViolationException e) {
+    String errorMessage =
+        e.getConstraintViolations().stream()
+            .map(v -> v.getMessage())
+            .collect(Collectors.joining(", "));
+    log.warn("ConstraintViolationException: {}", errorMessage);
     return ResponseEntity.status(GlobalErrorCode.INVALID_INPUT.getStatus())
         .body(ApiResponse.onFailure(GlobalErrorCode.INVALID_INPUT, errorMessage));
   }

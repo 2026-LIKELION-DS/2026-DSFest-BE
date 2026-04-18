@@ -1,5 +1,7 @@
 package com.ds.dsfest.domain.admin.service;
 
+import java.util.Objects;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +25,7 @@ public class AdminService {
   private final JwtProvider jwtProvider;
 
   public AdminLoginResDto login(AdminLoginReqDto req) {
-    if (!adminProperties.getUsername().equals(req.username())
+    if (!Objects.equals(adminProperties.getUsername(), req.username())
         || !passwordEncoder.matches(req.password(), adminProperties.getPassword())) {
       throw new CustomException(AdminErrorCode.ADMIN_LOGIN_FAILED);
     }

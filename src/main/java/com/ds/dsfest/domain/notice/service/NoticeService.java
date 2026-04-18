@@ -3,6 +3,8 @@ package com.ds.dsfest.domain.notice.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -110,15 +112,20 @@ public class NoticeService {
 
   private void replaceImages(Notice notice, List<String> keepUrls, List<MultipartFile> newImages)
       throws IOException {
-    List<String> urlsToDelete =
+    Set<String> existingUrls =
         notice.getImages().stream()
             .map(image -> image.getImageUrl())
-            .filter(url -> !keepUrls.contains(url))
-            .toList();
+            .collect(Collectors.toSet());
+
+    List<String> validatedKeepUrls =
+        keepUrls.stream().filter(existingUrls::contains).toList();
+
+    List<String> urlsToDelete =
+        existingUrls.stream().filter(url -> !validatedKeepUrls.contains(url)).toList();
 
     notice.clearImages();
 
-    List<String> allUrls = new ArrayList<>(keepUrls);
+    List<String> allUrls = new ArrayList<>(validatedKeepUrls);
     if (newImages != null) {
       for (MultipartFile file : newImages) {
         allUrls.add(s3Uploader.upload(file, S3_DIR));

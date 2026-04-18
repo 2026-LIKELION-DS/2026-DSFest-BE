@@ -1,10 +1,13 @@
 package com.ds.dsfest.domain.notice.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.constraints.NotBlank;
 
 import com.ds.dsfest.domain.notice.dto.NoticeSearchResDto;
 import com.ds.dsfest.domain.notice.dto.UrgentNoticeResDto;
@@ -13,6 +16,7 @@ import com.ds.dsfest.global.response.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/notices")
@@ -27,7 +31,7 @@ public class NoticeController implements NoticeControllerDocs {
 
   @GetMapping("/search")
   public ResponseEntity<ApiResponse<NoticeSearchResDto>> searchNotices(
-      @RequestParam String keyword) {
+      @RequestParam @NotBlank String keyword) {
     return ResponseEntity.ok(ApiResponse.onSuccess(noticeService.searchNotices(keyword)));
   }
 }
