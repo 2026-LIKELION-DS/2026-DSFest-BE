@@ -12,6 +12,7 @@ import com.ds.dsfest.domain.booth.constant.BoothType;
 import com.ds.dsfest.domain.booth.dto.BoothDetailResDto;
 import com.ds.dsfest.domain.booth.dto.BoothListItemResDto;
 import com.ds.dsfest.domain.booth.dto.BoothMapItemResDto;
+import com.ds.dsfest.domain.booth.dto.BoothStatusItemResDto;
 import com.ds.dsfest.global.response.ApiResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,4 +49,16 @@ public interface BoothControllerDocs {
               + " 태그, 이미지, 각 운영일자의 위치 번호를 함께 반환합니다."
               + " tags 첫 번째 항목에는 현재 시각 기준 상태(운영중/운영 예정/운영 종료)가 들어갑니다.")
   ResponseEntity<ApiResponse<BoothDetailResDto>> getBoothDetail(@PathVariable Long boothId);
+
+  @Operation(
+      summary = "부스 리스트 (운영중 필터)",
+      description =
+          "festivalDay 기준 부스 목록을 각 부스의 상태(운영중/운영 예정/운영 종료)와 함께 반환합니다."
+              + " active=true 적용 시: (1) 현재 운영 중인 부스가 있으면 '운영중' 부스만,"
+              + " (2) 없고 곧 시작될 슬롯이 남아있으면 '운영 예정' 부스만(낮 종료~밤 시작 전엔 밤 부스),"
+              + " (3) 모든 슬롯 종료 후엔 빈 리스트를 반환합니다."
+              + " active=false(기본) 시 모든 부스를 상태 태그와 함께 반환합니다.")
+  ResponseEntity<ApiResponse<List<BoothStatusItemResDto>>> getBoothsWithStatus(
+      @RequestParam @Min(1) int day,
+      @RequestParam(required = false, defaultValue = "false") boolean active);
 }

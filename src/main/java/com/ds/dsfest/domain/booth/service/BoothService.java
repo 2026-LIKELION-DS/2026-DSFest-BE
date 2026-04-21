@@ -5,7 +5,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,6 +20,7 @@ import com.ds.dsfest.domain.booth.constant.BoothType;
 import com.ds.dsfest.domain.booth.dto.BoothDetailResDto;
 import com.ds.dsfest.domain.booth.dto.BoothListItemResDto;
 import com.ds.dsfest.domain.booth.dto.BoothMapItemResDto;
+import com.ds.dsfest.domain.booth.dto.BoothStatusItemResDto;
 import com.ds.dsfest.domain.booth.entity.Booth;
 import com.ds.dsfest.domain.booth.entity.BoothMapPosition;
 import com.ds.dsfest.domain.booth.entity.BoothOperatingDay;
@@ -69,6 +75,66 @@ public class BoothService {
     return boothMapPositionRepository.findAllByDayAndType(festivalDay, dayNightType).stream()
         .map(BoothMapItemResDto::from)
         .toList();
+  }
+
+  public List<BoothStatusItemResDto> getBoothsWithStatus(int festivalDay, boolean activeOnly) {
+    List<BoothOperatingDay> ods =
+        boothOperatingDayRepository.findAllByFestivalDayWithBooth(festivalDay);
+
+    Map<Long, Booth> boothsById = new LinkedHashMap<>();
+    Map<Long, List<BoothOperatingDay>> slotsByBooth = new LinkedHashMap<>();
+    for (BoothOperatingDay od : ods) {
+      Long bid = od.getBooth().getId();
+      boothsById.putIfAbsent(bid, od.getBooth());
+      slotsByBooth.computeIfAbsent(bid, k -> new ArrayList<>()).add(od);
+    }
+
+    LocalDateTime now = LocalDateTime.now(clock);
+    LocalTime effectiveTime = resolveEffectiveTime(festivalDay, now);
+
+    Map<Long, String> statusByBooth = new HashMap<>();
+    boolean anyRunning = false;
+    boolean anyUpcoming = false;
+    for (Map.Entry<Long, List<BoothOperatingDay>> e : slotsByBooth.entrySet()) {
+      boolean running = false;
+      boolean upcoming = false;
+      for (BoothOperatingDay od : e.getValue()) {
+        if (!effectiveTime.isBefore(od.getStartTime()) && effectiveTime.isBefore(od.getEndTime())) {
+          running = true;
+        } else if (effectiveTime.isBefore(od.getStartTime())) {
+          upcoming = true;
+        }
+      }
+      String s = running ? TAG_RUNNING : (upcoming ? TAG_UPCOMING : TAG_ENDED);
+      statusByBooth.put(e.getKey(), s);
+      if (running) anyRunning = true;
+      if (upcoming) anyUpcoming = true;
+    }
+
+    if (activeOnly) {
+      String filterStatus = anyRunning ? TAG_RUNNING : (anyUpcoming ? TAG_UPCOMING : null);
+      if (filterStatus == null) {
+        return List.of();
+      }
+      return boothsById.values().stream()
+          .filter(b -> filterStatus.equals(statusByBooth.get(b.getId())))
+          .sorted(Comparator.comparingInt(Booth::getBoothNumber))
+          .map(b -> BoothStatusItemResDto.from(b, statusByBooth.get(b.getId())))
+          .toList();
+    }
+
+    return boothsById.values().stream()
+        .sorted(Comparator.comparingInt(Booth::getBoothNumber))
+        .map(b -> BoothStatusItemResDto.from(b, statusByBooth.get(b.getId())))
+        .toList();
+  }
+
+  private LocalTime resolveEffectiveTime(int festivalDay, LocalDateTime now) {
+    long diff = ChronoUnit.DAYS.between(festivalStartDate, now.toLocalDate());
+    int todayFestivalDay = (int) diff + 1;
+    if (festivalDay > todayFestivalDay) return LocalTime.MIN;
+    if (festivalDay < todayFestivalDay) return LocalTime.MAX;
+    return now.toLocalTime();
   }
 
   public BoothDetailResDto getBoothDetail(Long boothId) {
