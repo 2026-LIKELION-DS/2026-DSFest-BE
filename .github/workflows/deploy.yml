@@ -69,6 +69,7 @@ jobs:
             set -e
             cd /opt/dsfest/deploy
             # ---------- 1. .env.prod 생성 ----------
+            echo "SPRING_PROFILES_ACTIVE=${{ secrets.SPRING_PROFILES_ACTIVE }}" > .env.prod
             echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" > .env.prod
             echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env.prod
             echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env.prod
