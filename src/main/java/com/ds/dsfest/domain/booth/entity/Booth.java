@@ -1,16 +1,22 @@
 package com.ds.dsfest.domain.booth.entity;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -37,9 +43,13 @@ public class Booth extends BaseEntity {
   @Column(nullable = false, length = 100)
   private String name;
 
+  @ElementCollection(fetch = FetchType.LAZY, targetClass = BoothType.class)
+  @CollectionTable(
+      name = "booth_types",
+      joinColumns = @JoinColumn(name = "booth_id", nullable = false))
   @Enumerated(EnumType.STRING)
-  @Column(nullable = false, length = 10)
-  private BoothType boothType;
+  @Column(name = "booth_type", nullable = false, length = 10)
+  private Set<BoothType> boothTypes = EnumSet.noneOf(BoothType.class);
 
   @Column(nullable = false, length = 100)
   private String operatingSubject;
