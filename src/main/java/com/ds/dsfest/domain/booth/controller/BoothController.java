@@ -16,6 +16,7 @@ import com.ds.dsfest.domain.booth.constant.BoothType;
 import com.ds.dsfest.domain.booth.dto.BoothDetailResDto;
 import com.ds.dsfest.domain.booth.dto.BoothListItemResDto;
 import com.ds.dsfest.domain.booth.dto.BoothMapItemResDto;
+import com.ds.dsfest.domain.booth.dto.BoothStatusItemResDto;
 import com.ds.dsfest.domain.booth.service.BoothService;
 import com.ds.dsfest.global.response.ApiResponse;
 
@@ -50,5 +51,12 @@ public class BoothController implements BoothControllerDocs {
   @GetMapping("/{boothId}")
   public ResponseEntity<ApiResponse<BoothDetailResDto>> getBoothDetail(@PathVariable Long boothId) {
     return ResponseEntity.ok(ApiResponse.onSuccess(boothService.getBoothDetail(boothId)));
+  }
+
+  @GetMapping("/status")
+  public ResponseEntity<ApiResponse<List<BoothStatusItemResDto>>> getBoothsWithStatus(
+      @RequestParam @Min(1) int day,
+      @RequestParam(required = false, defaultValue = "false") boolean active) {
+    return ResponseEntity.ok(ApiResponse.onSuccess(boothService.getBoothsWithStatus(day, active)));
   }
 }
