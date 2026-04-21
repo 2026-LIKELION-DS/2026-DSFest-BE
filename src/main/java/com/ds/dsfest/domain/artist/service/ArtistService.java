@@ -69,17 +69,17 @@ public class ArtistService {
 
     LocalDateTime end = LocalDateTime.of(artist.getPerformanceDate(), artist.getEndTime());
 
-    if (now.isAfter(end)) {
+      if (!now.isBefore(end)) { // now >= end
       return CountdownStatus.ENDED;
     }
 
-    if ((now.isEqual(start) || now.isAfter(start)) && now.isBefore(end)) {
+      if (!now.isBefore(start)) { // start <= now < end
       return CountdownStatus.LIVE;
     }
 
-    Duration duration = Duration.between(now, start);
+      Duration duration = Duration.between(now, start); // now < start 보장됨
 
-    if (duration.toHours() <= 24) {
+      if (duration.compareTo(Duration.ofHours(24)) <= 0) {
       return CountdownStatus.WITHIN_24H;
     }
 
