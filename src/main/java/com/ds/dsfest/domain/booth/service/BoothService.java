@@ -58,18 +58,30 @@ public class BoothService {
   private final Random random = new Random();
 
   public List<BoothListItemResDto> getBoothsByDay(int festivalDay) {
-    return boothOperatingDayRepository.findAllByFestivalDayWithBooth(festivalDay).stream()
-        .map(operatingDay -> BoothListItemResDto.from(operatingDay.getBooth(), operatingDay))
-        .toList();
+    return groupAndMap(boothOperatingDayRepository.findAllByFestivalDayWithBooth(festivalDay));
   }
 
   public List<BoothListItemResDto> getBoothsByDayAndType(int festivalDay, BoothType type) {
     LocalTime from = type == BoothType.DAY ? DAY_START : NIGHT_START;
     LocalTime to = type == BoothType.DAY ? DAY_END : NIGHT_END;
-    return boothOperatingDayRepository
-        .findAllByFestivalDayAndTimeRange(festivalDay, from, to)
-        .stream()
-        .map(operatingDay -> BoothListItemResDto.from(operatingDay.getBooth(), operatingDay))
+    return groupAndMap(
+        boothOperatingDayRepository.findAllByFestivalDayAndTimeRange(festivalDay, from, to));
+  }
+
+  private List<BoothListItemResDto> groupAndMap(List<BoothOperatingDay> ods) {
+    Map<Long, Booth> boothsById = new LinkedHashMap<>();
+    Map<Long, List<BoothOperatingDay>> slotsByBooth = new LinkedHashMap<>();
+    for (BoothOperatingDay od : ods) {
+      Long bid = od.getBooth().getId();
+      boothsById.putIfAbsent(bid, od.getBooth());
+      List<BoothOperatingDay> slots = slotsByBooth.computeIfAbsent(bid, k -> new ArrayList<>());
+      if (!slots.contains(od)) {
+        slots.add(od);
+      }
+    }
+    return boothsById.values().stream()
+        .sorted(Comparator.comparingInt(Booth::getBoothNumber))
+        .map(b -> BoothListItemResDto.from(b, slotsByBooth.get(b.getId())))
         .toList();
   }
 
