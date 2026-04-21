@@ -1,12 +1,11 @@
 package com.ds.dsfest.domain.booth.repository;
 
-import java.util.List;
-
+import com.ds.dsfest.domain.booth.entity.BoothOperatingDay;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.ds.dsfest.domain.booth.entity.BoothOperatingDay;
+import java.util.List;
 
 public interface BoothOperatingDayRepository extends JpaRepository<BoothOperatingDay, Long> {
 
