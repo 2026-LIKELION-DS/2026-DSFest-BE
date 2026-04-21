@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ds.dsfest.domain.schedule.dto.FestivalScheduleDayResDto;
+import com.ds.dsfest.domain.schedule.dto.FestivalScheduleNowResDto;
 import com.ds.dsfest.domain.schedule.service.FestivalScheduleService;
 import com.ds.dsfest.global.response.ApiResponse;
 
@@ -23,5 +24,10 @@ public class FestivalScheduleController implements FestivalScheduleControllerDoc
   @GetMapping
   public ResponseEntity<ApiResponse<List<FestivalScheduleDayResDto>>> getAllSchedules() {
     return ResponseEntity.ok(ApiResponse.onSuccess(festivalScheduleService.getAllSchedules()));
+  }
+
+  @GetMapping("/now")
+  public ResponseEntity<ApiResponse<FestivalScheduleNowResDto>> getCurrentStatus() {
+    return ResponseEntity.ok(ApiResponse.onSuccess(festivalScheduleService.getCurrentStatus()));
   }
 }
