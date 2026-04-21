@@ -1,17 +1,21 @@
 package com.ds.dsfest.domain.schedule.service;
 
+import java.time.Clock;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ds.dsfest.domain.schedule.dto.FestivalScheduleDayResDto;
+import com.ds.dsfest.domain.schedule.dto.FestivalScheduleNowResDto;
 import com.ds.dsfest.domain.schedule.dto.ScheduleItemResDto;
 import com.ds.dsfest.domain.schedule.entity.FestivalSchedule;
 import com.ds.dsfest.domain.schedule.repository.FestivalScheduleRepository;
@@ -24,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class FestivalScheduleService {
 
   private final FestivalScheduleRepository festivalScheduleRepository;
+  private final Clock clock;
 
   @Value("${festival.start-date}")
   private LocalDate festivalStartDate;
@@ -55,6 +60,33 @@ public class FestivalScheduleService {
       result.add(new FestivalScheduleDayResDto(e.getKey(), date, label, e.getValue()));
     }
     return result;
+  }
+
+  public FestivalScheduleNowResDto getCurrentStatus() {
+    LocalDateTime now = LocalDateTime.now(clock);
+    List<FestivalSchedule> all =
+        festivalScheduleRepository.findAllByOrderByFestivalDayAscStartTimeAsc();
+
+    if (all.isEmpty()) {
+      return FestivalScheduleNowResDto.ended();
+    }
+
+    List<ScheduleItemResDto> active =
+        all.stream()
+            .filter(s -> !s.getStartTime().isAfter(now))
+            .filter(s -> s.getEndTime() == null || s.getEndTime().isAfter(now))
+            .map(ScheduleItemResDto::from)
+            .toList();
+
+    if (!active.isEmpty()) {
+      return FestivalScheduleNowResDto.inProgress(active);
+    }
+
+    Optional<FestivalSchedule> next =
+        all.stream().filter(s -> s.getStartTime().isAfter(now)).findFirst();
+
+    return next.map(s -> FestivalScheduleNowResDto.upcoming(ScheduleItemResDto.from(s)))
+        .orElseGet(FestivalScheduleNowResDto::ended);
   }
 
   private String toKoreanDow(DayOfWeek dow) {
