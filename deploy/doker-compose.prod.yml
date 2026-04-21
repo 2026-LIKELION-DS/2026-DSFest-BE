@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  app:
+    image : naeuun/dsfest:latest
+    container_name: dsfest-be
+    env_file:
+      - /opt/dsfest/.env.prod
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
