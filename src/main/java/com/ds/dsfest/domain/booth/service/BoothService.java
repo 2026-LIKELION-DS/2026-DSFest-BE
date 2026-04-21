@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -54,6 +55,7 @@ public class BoothService {
   private LocalDate festivalStartDate;
 
   private final Clock clock = Clock.systemDefaultZone();
+  private final Random random = new Random();
 
   public List<BoothListItemResDto> getBoothsByDay(int festivalDay) {
     return boothOperatingDayRepository.findAllByFestivalDayWithBooth(festivalDay).stream()
@@ -127,6 +129,17 @@ public class BoothService {
         .sorted(Comparator.comparingInt(Booth::getBoothNumber))
         .map(b -> BoothStatusItemResDto.from(b, statusByBooth.get(b.getId())))
         .toList();
+  }
+
+  public BoothStatusItemResDto getRandomRecommendedBooth(int festivalDay) {
+    List<BoothStatusItemResDto> running = new ArrayList<>();
+    for (BoothStatusItemResDto b : getBoothsWithStatus(festivalDay, false)) {
+      if (!b.tags().isEmpty() && TAG_RUNNING.equals(b.tags().get(0))) {
+        running.add(b);
+      }
+    }
+    if (running.isEmpty()) return null;
+    return running.get(random.nextInt(running.size()));
   }
 
   private LocalTime resolveEffectiveTime(int festivalDay, LocalDateTime now) {

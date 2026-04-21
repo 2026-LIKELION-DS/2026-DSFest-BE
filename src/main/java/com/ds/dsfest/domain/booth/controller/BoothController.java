@@ -59,4 +59,10 @@ public class BoothController implements BoothControllerDocs {
       @RequestParam(required = false, defaultValue = "false") boolean active) {
     return ResponseEntity.ok(ApiResponse.onSuccess(boothService.getBoothsWithStatus(day, active)));
   }
+
+  @GetMapping("/random")
+  public ResponseEntity<ApiResponse<BoothStatusItemResDto>> getRandomRecommendedBooth(
+      @RequestParam @Min(1) int day) {
+    return ResponseEntity.ok(ApiResponse.onSuccess(boothService.getRandomRecommendedBooth(day)));
+  }
 }
