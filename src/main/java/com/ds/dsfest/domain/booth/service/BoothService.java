@@ -107,23 +107,35 @@ public class BoothService {
     LocalTime effectiveTime = resolveEffectiveTime(festivalDay, now);
 
     Map<Long, String> statusByBooth = new HashMap<>();
+    Map<Long, LocalTime> earliestUpcomingByBooth = new HashMap<>();
     boolean anyRunning = false;
     boolean anyUpcoming = false;
     for (Map.Entry<Long, List<BoothOperatingDay>> e : slotsByBooth.entrySet()) {
       boolean running = false;
-      boolean upcoming = false;
+      LocalTime earliestUpcoming = null;
       for (BoothOperatingDay od : e.getValue()) {
         if (!effectiveTime.isBefore(od.getStartTime()) && effectiveTime.isBefore(od.getEndTime())) {
           running = true;
         } else if (effectiveTime.isBefore(od.getStartTime())) {
-          upcoming = true;
+          if (earliestUpcoming == null || od.getStartTime().isBefore(earliestUpcoming)) {
+            earliestUpcoming = od.getStartTime();
+          }
         }
       }
+      boolean upcoming = earliestUpcoming != null;
       String s = running ? TAG_RUNNING : (upcoming ? TAG_UPCOMING : TAG_ENDED);
       statusByBooth.put(e.getKey(), s);
+      if (upcoming) earliestUpcomingByBooth.put(e.getKey(), earliestUpcoming);
       if (running) anyRunning = true;
       if (upcoming) anyUpcoming = true;
     }
+
+    Comparator<Booth> statusComparator =
+        Comparator.<Booth, Integer>comparing(b -> statusPriority(statusByBooth.get(b.getId())))
+            .thenComparing(
+                b -> earliestUpcomingByBooth.getOrDefault(b.getId(), LocalTime.MIN),
+                Comparator.naturalOrder())
+            .thenComparingInt(Booth::getBoothNumber);
 
     if (activeOnly) {
       String filterStatus = anyRunning ? TAG_RUNNING : (anyUpcoming ? TAG_UPCOMING : null);
@@ -132,15 +144,21 @@ public class BoothService {
       }
       return boothsById.values().stream()
           .filter(b -> filterStatus.equals(statusByBooth.get(b.getId())))
-          .sorted(Comparator.comparingInt(Booth::getBoothNumber))
+          .sorted(statusComparator)
           .map(b -> BoothStatusItemResDto.from(b, statusByBooth.get(b.getId())))
           .toList();
     }
 
     return boothsById.values().stream()
-        .sorted(Comparator.comparingInt(Booth::getBoothNumber))
+        .sorted(statusComparator)
         .map(b -> BoothStatusItemResDto.from(b, statusByBooth.get(b.getId())))
         .toList();
+  }
+
+  private int statusPriority(String status) {
+    if (TAG_RUNNING.equals(status)) return 0;
+    if (TAG_UPCOMING.equals(status)) return 1;
+    return 2;
   }
 
   public BoothStatusItemResDto getRandomRecommendedBooth(int festivalDay) {
