@@ -25,6 +25,14 @@ public interface BoothControllerDocs {
       @RequestParam @Min(1) int day);
 
   @Operation(
+      summary = "낮/밤별 부스 목록 조회",
+      description =
+          "festivalDay + 낮/밤 타입으로 필터링한 부스 목록을 boothNumber 오름차순으로 반환합니다. "
+              + "DAY는 startTime < 16:00, NIGHT는 startTime >= 16:00 슬롯을 조회합니다.")
+  ResponseEntity<ApiResponse<List<BoothListItemResDto>>> getBoothsByDayAndType(
+      @RequestParam @Min(1) int day, @RequestParam BoothType type);
+
+  @Operation(
       summary = "부스 지도 조회",
       description =
           "festivalDay + 낮/밤 타입에 해당하는 부스 지도의 각 위치(positionNumber 1~35)에 배치된 부스 정보를 반환합니다.")
