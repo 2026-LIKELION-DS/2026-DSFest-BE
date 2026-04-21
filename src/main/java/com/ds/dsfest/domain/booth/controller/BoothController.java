@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ds.dsfest.domain.booth.constant.BoothType;
 import com.ds.dsfest.domain.booth.dto.BoothListItemResDto;
+import com.ds.dsfest.domain.booth.dto.BoothMapItemResDto;
 import com.ds.dsfest.domain.booth.service.BoothService;
 import com.ds.dsfest.global.response.ApiResponse;
 
@@ -29,5 +31,11 @@ public class BoothController implements BoothControllerDocs {
   public ResponseEntity<ApiResponse<List<BoothListItemResDto>>> getBoothsByDay(
       @RequestParam @Min(1) int day) {
     return ResponseEntity.ok(ApiResponse.onSuccess(boothService.getBoothsByDay(day)));
+  }
+
+  @GetMapping("/map")
+  public ResponseEntity<ApiResponse<List<BoothMapItemResDto>>> getBoothMap(
+      @RequestParam @Min(1) int day, @RequestParam BoothType type) {
+    return ResponseEntity.ok(ApiResponse.onSuccess(boothService.getBoothMap(day, type)));
   }
 }
