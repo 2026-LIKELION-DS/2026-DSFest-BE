@@ -33,6 +33,12 @@ public class BoothController implements BoothControllerDocs {
     return ResponseEntity.ok(ApiResponse.onSuccess(boothService.getBoothsByDay(day)));
   }
 
+  @GetMapping("/by-time")
+  public ResponseEntity<ApiResponse<List<BoothListItemResDto>>> getBoothsByDayAndType(
+      @RequestParam @Min(1) int day, @RequestParam BoothType type) {
+    return ResponseEntity.ok(ApiResponse.onSuccess(boothService.getBoothsByDayAndType(day, type)));
+  }
+
   @GetMapping("/map")
   public ResponseEntity<ApiResponse<List<BoothMapItemResDto>>> getBoothMap(
       @RequestParam @Min(1) int day, @RequestParam BoothType type) {
