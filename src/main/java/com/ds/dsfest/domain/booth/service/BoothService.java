@@ -50,11 +50,11 @@ public class BoothService {
   private final BoothRepository boothRepository;
   private final BoothOperatingDayRepository boothOperatingDayRepository;
   private final BoothMapPositionRepository boothMapPositionRepository;
+  private final Clock clock;
 
   @Value("${festival.start-date}")
   private LocalDate festivalStartDate;
 
-  private final Clock clock = Clock.systemDefaultZone();
   private final Random random = new Random();
 
   public List<BoothListItemResDto> getBoothsByDay(int festivalDay) {

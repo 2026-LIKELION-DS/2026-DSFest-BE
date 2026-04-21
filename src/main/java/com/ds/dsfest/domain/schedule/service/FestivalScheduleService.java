@@ -28,11 +28,10 @@ import lombok.RequiredArgsConstructor;
 public class FestivalScheduleService {
 
   private final FestivalScheduleRepository festivalScheduleRepository;
+  private final Clock clock;
 
   @Value("${festival.start-date}")
   private LocalDate festivalStartDate;
-
-  private final Clock clock = Clock.systemDefaultZone();
 
   public List<FestivalScheduleDayResDto> getAllSchedules() {
     List<FestivalSchedule> all =

@@ -1,6 +1,6 @@
 package com.ds.dsfest.domain.booth.dto;
 
-import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
@@ -20,10 +20,11 @@ public record BoothListItemResDto(
     String operatingSubject,
     String thumbnailUrl,
     List<String> tags,
-    LocalTime startTime,
-    LocalTime endTime) {
+    List<String> operatingTimes) {
 
-  public static BoothListItemResDto from(Booth booth, BoothOperatingDay operatingDay) {
+  private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm");
+
+  public static BoothListItemResDto from(Booth booth, List<BoothOperatingDay> operatingDays) {
     String thumbnailUrl =
         booth.getImages().stream()
             .min(Comparator.comparingInt(BoothImage::getImageOrder))
@@ -37,6 +38,13 @@ public record BoothListItemResDto(
             ? EnumSet.noneOf(BoothType.class)
             : EnumSet.copyOf(booth.getBoothTypes());
 
+    List<String> operatingTimes =
+        operatingDays.stream()
+            .sorted(Comparator.comparing(BoothOperatingDay::getStartTime))
+            .map(od -> od.getStartTime().format(TIME_FMT) + "~" + od.getEndTime().format(TIME_FMT))
+            .distinct()
+            .toList();
+
     return new BoothListItemResDto(
         booth.getId(),
         booth.getBoothNumber(),
@@ -45,7 +53,6 @@ public record BoothListItemResDto(
         booth.getOperatingSubject(),
         thumbnailUrl,
         tags,
-        operatingDay.getStartTime(),
-        operatingDay.getEndTime());
+        operatingTimes);
   }
 }
