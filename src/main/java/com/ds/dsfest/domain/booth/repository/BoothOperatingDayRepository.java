@@ -15,6 +15,7 @@ public interface BoothOperatingDayRepository extends JpaRepository<BoothOperatin
           + "JOIN FETCH od.booth b "
           + "LEFT JOIN FETCH b.tags "
           + "LEFT JOIN FETCH b.boothTypes "
+          + "LEFT JOIN FETCH b.images "
           + "WHERE od.festivalDay = :festivalDay "
           + "ORDER BY b.boothNumber ASC")
   List<BoothOperatingDay> findAllByFestivalDayWithBooth(@Param("festivalDay") int festivalDay);
