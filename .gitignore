@@ -45,6 +45,7 @@ application-local.yaml
 application-secret.yml
 application-secrets.yml
 
+
 ### Logs ###
 logs/
 *.log
