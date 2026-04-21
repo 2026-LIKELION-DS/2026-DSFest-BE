@@ -7,11 +7,13 @@ import jakarta.validation.constraints.Min;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ds.dsfest.domain.booth.constant.BoothType;
+import com.ds.dsfest.domain.booth.dto.BoothDetailResDto;
 import com.ds.dsfest.domain.booth.dto.BoothListItemResDto;
 import com.ds.dsfest.domain.booth.dto.BoothMapItemResDto;
 import com.ds.dsfest.domain.booth.service.BoothService;
@@ -43,5 +45,10 @@ public class BoothController implements BoothControllerDocs {
   public ResponseEntity<ApiResponse<List<BoothMapItemResDto>>> getBoothMap(
       @RequestParam @Min(1) int day, @RequestParam BoothType type) {
     return ResponseEntity.ok(ApiResponse.onSuccess(boothService.getBoothMap(day, type)));
+  }
+
+  @GetMapping("/{boothId}")
+  public ResponseEntity<ApiResponse<BoothDetailResDto>> getBoothDetail(@PathVariable Long boothId) {
+    return ResponseEntity.ok(ApiResponse.onSuccess(boothService.getBoothDetail(boothId)));
   }
 }

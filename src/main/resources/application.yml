@@ -8,3 +8,6 @@ spring:
 
 server:
   port: 8080
+
+festival:
+  start-date: ${FESTIVAL_START_DATE:2026-05-13}

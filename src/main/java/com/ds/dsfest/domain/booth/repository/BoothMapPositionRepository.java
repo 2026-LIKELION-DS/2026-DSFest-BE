@@ -21,4 +21,6 @@ public interface BoothMapPositionRepository extends JpaRepository<BoothMapPositi
           + "ORDER BY p.positionNumber ASC")
   List<BoothMapPosition> findAllByDayAndType(
       @Param("festivalDay") int festivalDay, @Param("dayNightType") BoothType dayNightType);
+
+  List<BoothMapPosition> findAllByBoothId(Long boothId);
 }
