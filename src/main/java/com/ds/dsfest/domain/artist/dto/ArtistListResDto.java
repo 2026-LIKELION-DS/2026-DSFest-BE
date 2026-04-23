@@ -10,7 +10,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ArtistListResponseDto {
+public class ArtistListResDto {
 
   private Long id;
   private String name;

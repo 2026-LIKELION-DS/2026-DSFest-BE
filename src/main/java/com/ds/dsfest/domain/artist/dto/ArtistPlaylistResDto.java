@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 // 덕우플레이리스트
-public class ArtistPlaylistResponseDto {
+public class ArtistPlaylistResDto {
 
   private Long artistId;
   private String artistName;
