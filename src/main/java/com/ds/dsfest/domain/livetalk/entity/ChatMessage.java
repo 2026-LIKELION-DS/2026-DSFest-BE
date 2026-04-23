@@ -28,9 +28,18 @@ public class ChatMessage extends BaseEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "guest_uuid", nullable = false)
+  @JoinColumn(name = "guest_uuid", referencedColumnName = "uuid", nullable = false)
   private GuestUser guestUser;
 
   @Column(nullable = false, length = 500)
   private String content;
+
+  private ChatMessage(GuestUser guestUser, String content) {
+    this.guestUser = guestUser;
+    this.content = content;
+  }
+
+  public static ChatMessage create(GuestUser guestUser, String content) {
+    return new ChatMessage(guestUser, content);
+  }
 }

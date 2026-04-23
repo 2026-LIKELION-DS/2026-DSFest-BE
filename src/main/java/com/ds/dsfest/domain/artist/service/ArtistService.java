@@ -7,8 +7,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ds.dsfest.domain.artist.dto.ArtistListResponseDto;
-import com.ds.dsfest.domain.artist.dto.ArtistPlaylistResponseDto;
+import com.ds.dsfest.domain.artist.dto.ArtistListResDto;
+import com.ds.dsfest.domain.artist.dto.ArtistPlaylistResDto;
 import com.ds.dsfest.domain.artist.entity.Artist;
 import com.ds.dsfest.domain.artist.entity.CountdownStatus;
 import com.ds.dsfest.domain.artist.exception.ArtistErrorCode;
@@ -24,13 +24,13 @@ public class ArtistService {
 
   private final ArtistRepository artistRepository;
 
-  public List<ArtistListResponseDto> getArtistsByDay(int day) {
+  public List<ArtistListResDto> getArtistsByDay(int day) {
     List<Artist> artists = artistRepository.findByFestivalDayOrderByStartTimeAsc(day);
 
     return artists.stream()
         .map(
             artist ->
-                ArtistListResponseDto.builder()
+                ArtistListResDto.builder()
                     .id(artist.getId())
                     .name(artist.getName())
                     .shortBio(artist.getShortBio())
@@ -46,10 +46,10 @@ public class ArtistService {
         .toList();
   }
 
-  public ArtistPlaylistResponseDto getArtistPlaylist(Long artistId) {
+  public ArtistPlaylistResDto getArtistPlaylist(Long artistId) {
     Artist artist = getArtistById(artistId);
 
-    return ArtistPlaylistResponseDto.builder()
+    return ArtistPlaylistResDto.builder()
         .artistId(artist.getId())
         .artistName(artist.getName())
         .youtubeUrl(artist.getYoutubeUrl())
@@ -69,17 +69,17 @@ public class ArtistService {
 
     LocalDateTime end = LocalDateTime.of(artist.getPerformanceDate(), artist.getEndTime());
 
-      if (!now.isBefore(end)) { // now >= end
+    if (!now.isBefore(end)) { // now >= end
       return CountdownStatus.ENDED;
     }
 
-      if (!now.isBefore(start)) { // start <= now < end
+    if (!now.isBefore(start)) { // start <= now < end
       return CountdownStatus.LIVE;
     }
 
-      Duration duration = Duration.between(now, start); // now < start 보장됨
+    Duration duration = Duration.between(now, start); // now < start 보장됨
 
-      if (duration.compareTo(Duration.ofHours(24)) <= 0) {
+    if (duration.compareTo(Duration.ofHours(24)) <= 0) {
       return CountdownStatus.WITHIN_24H;
     }
 

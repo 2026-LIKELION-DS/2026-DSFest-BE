@@ -49,7 +49,7 @@ public class SecurityConfig {
                     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html")
                     .permitAll()
                     // WebSocket
-                    .requestMatchers("/ws/**")
+                    .requestMatchers("/ws", "/ws/**")
                     .permitAll()
                     // 어드민 로그인은 누구나 접근 가능
                     .requestMatchers(HttpMethod.POST, "/api/admin/login")

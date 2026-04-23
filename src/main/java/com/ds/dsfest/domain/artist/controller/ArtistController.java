@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.ds.dsfest.domain.artist.dto.ArtistListResponseDto;
-import com.ds.dsfest.domain.artist.dto.ArtistPlaylistResponseDto;
+import com.ds.dsfest.domain.artist.dto.ArtistListResDto;
+import com.ds.dsfest.domain.artist.dto.ArtistPlaylistResDto;
 import com.ds.dsfest.domain.artist.service.ArtistService;
 import com.ds.dsfest.global.response.ApiResponse;
 
@@ -21,14 +21,14 @@ public class ArtistController implements ArtistControllerDocs {
 
   @Override
   @GetMapping
-  public ResponseEntity<ApiResponse<List<ArtistListResponseDto>>> getArtistsByDay(
+  public ResponseEntity<ApiResponse<List<ArtistListResDto>>> getArtistsByDay(
       @RequestParam int day) {
     return ResponseEntity.ok(ApiResponse.onSuccess(artistService.getArtistsByDay(day)));
   }
 
   @Override
   @GetMapping("/{artistId}/playlist")
-  public ResponseEntity<ApiResponse<ArtistPlaylistResponseDto>> getArtistPlaylist(
+  public ResponseEntity<ApiResponse<ArtistPlaylistResDto>> getArtistPlaylist(
       @PathVariable Long artistId) {
     return ResponseEntity.ok(ApiResponse.onSuccess(artistService.getArtistPlaylist(artistId)));
   }
