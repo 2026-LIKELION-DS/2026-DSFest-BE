@@ -1,0 +1,89 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 코드 체크아웃
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. 멀티아키 빌드 환경 준비
+      - name: Set up QEMU (multi-arch emulation)
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 3. Docker Hub 로그인
+      - name: Docker Hub login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 4. 이미지 태그 세팅
+      - name: Prepare image tags
+        id: prep
+        run: |
+          IMAGE_NS="${{ secrets.DOCKERHUB_USERNAME }}"
+          IMAGE_NAME="dsfest"
+          IMAGE="${IMAGE_NS}/${IMAGE_NAME}"
+          SHORT_SHA="${GITHUB_SHA::7}"
+          echo "image=${IMAGE}" >> $GITHUB_OUTPUT
+          echo "tag_latest=${IMAGE}:latest" >> $GITHUB_OUTPUT
+          echo "tag_sha=${IMAGE}:${SHORT_SHA}" >> $GITHUB_OUTPUT
+
+      # 5. 빌드 & 푸시
+      - name: Build and Push (multi-arch)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ steps.prep.outputs.tag_latest }}
+            ${{ steps.prep.outputs.tag_sha }}
+          cache-from: type=registry,ref=${{ steps.prep.outputs.tag_latest }}
+          cache-to: type=inline
+
+      # 6. EC2 접속 - .env.prod 동적 생성 + 배포
+      - name: Deploy on EC2 (pull & up -d)
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -e
+            cd /opt/dsfest/deploy
+            echo "DB_URL=${{ secrets.DB_URL }}" > .env.prod
+            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env.prod
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env.prod
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.prod
+            echo "JWT_ACCESS_EXPIRATION=${{ secrets.JWT_ACCESS_EXPIRATION }}" >> .env.prod
+            echo "JWT_REFRESH_EXPIRATION=${{ secrets.JWT_REFRESH_EXPIRATION }}" >> .env.prod
+            echo "ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }}" >> .env.prod
+            echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> .env.prod
+            echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> .env.prod
+            echo "AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}" >> .env.prod
+            echo "SPRING_PROFILES_ACTIVE=${{ secrets.SPRING_PROFILES_ACTIVE }}" >> .env.prod
+            # ---------- 2. 도커 컴포즈 배포 ----------
+            echo "[1/3] docker compose pull"
+            docker compose -f docker-compose.prod.yml pull
+            echo "[2/3] docker compose up -d"
+            docker compose -f docker-compose.prod.yml up -d
+            echo "[3/3] docker image prune"
+            docker image prune -f
+            echo "✅ Deploy done."

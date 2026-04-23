@@ -6,8 +6,10 @@ spring:
   jackson:
     time-zone: Asia/Seoul
 
+
 server:
   port: 8080
+  forward-headers-strategy: framework
 
 festival:
   start-date: ${FESTIVAL_START_DATE:2026-05-13}
