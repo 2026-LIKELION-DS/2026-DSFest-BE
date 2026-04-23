@@ -44,10 +44,13 @@ public class LiveTalkService {
             .findById(uuid)
             .orElseThrow(() -> new CustomException(UserErrorCode.GUEST_NOT_FOUND));
 
-    String normalizedContent = content == null ? "" : content.trim();
-    if (normalizedContent.isBlank()) {
-      throw new IllegalArgumentException("메시지는 비어 있을 수 없습니다.");
-    }
+      String normalizedContent = content == null ? "" : content.trim();
+      if (normalizedContent.isBlank()) {
+          throw new IllegalArgumentException("메시지는 비어 있을 수 없습니다.");
+      }
+      if (normalizedContent.length() > 500) {
+          throw new IllegalArgumentException("메시지는 500자를 초과할 수 없습니다.");
+      }
 
     ChatMessage chatMessage = ChatMessage.create(guestUser, normalizedContent);
     ChatMessage savedMessage = chatMessageRepository.save(chatMessage);
@@ -56,10 +59,13 @@ public class LiveTalkService {
   }
 
   private UUID parseUuid(String guestUuid) {
-    try {
-      return UUID.fromString(guestUuid);
-    } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException("올바르지 않은 guestUuid 형식입니다.");
-    }
+      if (guestUuid == null || guestUuid.isBlank()) {
+          throw new IllegalArgumentException("guestUuid는 필수값입니다.");
+      }
+      try {
+        return UUID.fromString(guestUuid.trim());
+      } catch (IllegalArgumentException e) {
+          throw new IllegalArgumentException("올바르지 않은 guestUuid 형식입니다.");
+      }
   }
 }
