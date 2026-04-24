@@ -1,5 +1,7 @@
 package com.ds.dsfest.domain.livetalk.controller;
 
+import jakarta.validation.Valid;
+
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -19,7 +21,7 @@ public class LiveTalkMessageController {
   private final SimpMessagingTemplate messagingTemplate;
 
   @MessageMapping("/livetalk.send")
-  public void sendMessage(@Payload ChatMessageSendReqDto request) {
+  public void sendMessage(@Valid @Payload ChatMessageSendReqDto request) {
     ChatMessageResDto response =
         liveTalkService.saveMessage(request.guestUuid(), request.content());
 
