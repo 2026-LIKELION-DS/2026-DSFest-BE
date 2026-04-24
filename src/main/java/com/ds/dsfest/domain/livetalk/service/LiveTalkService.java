@@ -81,12 +81,9 @@ public class LiveTalkService {
   // ✅ 읽음 처리
   @Transactional
   public void markAsRead(String guestUuid) {
-      String normalizedGuestUuid = parseUuid(guestUuid).toString();
+    String normalizedGuestUuid = parseUuid(guestUuid).toString();
 
-      chatReadStatusRepository.upsertReadStatus(
-          normalizedGuestUuid,
-          LocalDateTime.now()
-      );
+    chatReadStatusRepository.upsertReadStatus(normalizedGuestUuid, LocalDateTime.now());
   }
 
   // ✅ 안 읽은 메시지 수

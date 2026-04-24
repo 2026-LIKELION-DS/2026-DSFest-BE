@@ -2,6 +2,8 @@ package com.ds.dsfest.domain.livetalk.controller;
 
 import java.util.List;
 
+import com.ds.dsfest.domain.livetalk.dto.ChatTopicResDto;
+import com.ds.dsfest.domain.livetalk.service.ChatTopicService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,4 +45,12 @@ public class LiveTalkController {
   public ResponseEntity<ApiResponse<Long>> getUnreadCount(@RequestParam String guestUuid) {
     return ResponseEntity.ok(ApiResponse.onSuccess(liveTalkService.getUnreadCount(guestUuid)));
   }
+
+
+  private final ChatTopicService chatTopicService;
+// 대화 주제
+  @GetMapping("/topics/current")
+    public ChatTopicResDto getCurrentTopic() {
+        return chatTopicService.getCurrentTopic();
+    }
 }
