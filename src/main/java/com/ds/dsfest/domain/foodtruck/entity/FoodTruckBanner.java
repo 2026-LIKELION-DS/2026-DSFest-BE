@@ -28,4 +28,7 @@ public class FoodTruckBanner extends BaseEntity {
 
   @Column(nullable = false)
   private int bannerOrder;
+
+  @Column(name = "title", nullable = false, length = 100)
+  private String title;
 }
