@@ -28,6 +28,7 @@ public class FoodTruck extends BaseEntity {
   @Column(columnDefinition = "TEXT")
   private String description;
 
+  @OrderBy("id ASC")
   @OneToMany(mappedBy = "foodTruck", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<FoodTruckImage> foodTruckImages = new ArrayList<>();
 
