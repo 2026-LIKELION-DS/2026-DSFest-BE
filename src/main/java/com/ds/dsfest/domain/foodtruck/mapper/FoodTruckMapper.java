@@ -18,10 +18,10 @@ public class FoodTruckMapper {
      * @param likeCount     좋아요 개수
      * @return 푸드트럭 리스트 응답 DTO
      */
-    public FoodTruckListResDto toFoodTruckListResDto(FoodTruck foodTruck, String operatingDays, Integer likeCount, Boolean isOpen) {
+    public FoodTruckListResDto toFoodTruckListResDto(FoodTruck foodTruck,String thumbnailUrl, String operatingDays, Integer likeCount, Boolean isOpen) {
         return new FoodTruckListResDto(
             foodTruck.getId(),
-            foodTruck.getImageUrl(),
+            thumbnailUrl,
             foodTruck.getName(),
             foodTruck.getRepresentativeMenu(),
             foodTruck.getDescription(),
