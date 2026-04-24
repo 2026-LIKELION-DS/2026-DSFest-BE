@@ -1,5 +1,6 @@
 package com.ds.dsfest.domain.foodtruck.controller;
 
+import com.ds.dsfest.domain.foodtruck.dto.FoodTruckDetailResDto;
 import com.ds.dsfest.domain.foodtruck.dto.FoodTruckLikeResDto;
 import com.ds.dsfest.domain.foodtruck.dto.FoodTruckListResDto;
 import com.ds.dsfest.domain.foodtruck.service.FoodTruckService;
@@ -25,8 +26,8 @@ public class FoodTruckController implements FoodTruckControllerDocs {
      */
     @GetMapping
     @Override
-    public ResponseEntity<ApiResponse<List<FoodTruckListResDto>>> getFoodTruckList() {
-        List<FoodTruckListResDto> result = foodTruckService.getFoodTruckList();
+    public ResponseEntity<ApiResponse<List<FoodTruckListResDto>>> getFoodTruckList(@RequestParam(value = "is-vegan", required = false, defaultValue = "false") boolean isVegan) {
+        List<FoodTruckListResDto> result = foodTruckService.getFoodTruckList(isVegan);
         return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }
 
@@ -40,6 +41,19 @@ public class FoodTruckController implements FoodTruckControllerDocs {
         @RequestHeader("guest_uuid") UUID guestUuid
     ) {
         FoodTruckLikeResDto result = foodTruckService.toggleFoodTruckLike(foodTruckId, guestUuid);
+        return ResponseEntity.ok(ApiResponse.onSuccess(result));
+    }
+
+    /**
+     * 푸드트럭 상세 조회 API
+     */
+    @GetMapping("/{foodTruckId}")
+    @Override
+    public ResponseEntity<ApiResponse<FoodTruckDetailResDto>> getFoodTruckDetail(
+        @PathVariable Long foodTruckId,
+        @RequestHeader(value = "guest_uuid", required = false) UUID guestUuid
+    ) {
+        FoodTruckDetailResDto result = foodTruckService.getFoodTruckDetail(foodTruckId, guestUuid);
         return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }
 }

@@ -1,22 +1,13 @@
 package com.ds.dsfest.domain.foodtruck.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-
 import com.ds.dsfest.global.common.BaseEntity;
-
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -37,8 +28,9 @@ public class FoodTruck extends BaseEntity {
   @Column(columnDefinition = "TEXT")
   private String description;
 
-  @Column(nullable = false, length = 500)
-  private String imageUrl;
+  @OrderBy("id ASC")
+  @OneToMany(mappedBy = "foodTruck", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<FoodTruckImage> foodTruckImages = new ArrayList<>();
 
   @OneToMany(mappedBy = "foodTruck", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<FoodTruckMenu> menus = new ArrayList<>();
