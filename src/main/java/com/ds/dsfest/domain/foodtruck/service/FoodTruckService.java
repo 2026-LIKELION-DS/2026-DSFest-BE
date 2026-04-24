@@ -15,6 +15,7 @@ import com.ds.dsfest.domain.user.repository.GuestUserRepository;
 import com.ds.dsfest.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,7 +86,7 @@ public class FoodTruckService {
                 }
 
 
-                int likeCount = (int) foodTruckLikeRepository.countByFoodTruck(truck); // 해당 트럭의 좋아요 개수 조회
+                int likeCount = Math.toIntExact(foodTruckLikeRepository.countByFoodTruck(truck)); // 해당 트럭의 좋아요 개수 조회
 
                 return foodTruckMapper.toFoodTruckListResDto(truck, operatingDaysString, likeCount, isOpen);
             })
@@ -124,12 +125,25 @@ public class FoodTruckService {
             foodTruckLikeRepository.delete(existingLike.get());
             return new FoodTruckLikeResDto(false);
         } else {
-            FoodTruckLike newLike = FoodTruckLike.builder()
-                .guestUser(guestUser)
-                .foodTruck(foodTruck)
-                .build();
-            foodTruckLikeRepository.save(newLike);
-            return new FoodTruckLikeResDto(true);
+            try {
+                FoodTruckLike newLike = FoodTruckLike.builder()
+                    .guestUser(guestUser)
+                    .foodTruck(foodTruck)
+                    .build();
+                foodTruckLikeRepository.save(newLike);
+                return new FoodTruckLikeResDto(true);
+
+            } catch (DataIntegrityViolationException e) {
+                /**
+                 * 동시에 여러 번 눌러서 Unique 제약조건 충돌(500)이 발생한 경우
+                 */
+                FoodTruckLike concurrentLike = foodTruckLikeRepository
+                    .findByGuestUserAndFoodTruck(guestUser, foodTruck)
+                    .orElseThrow(() -> e); // 만약 못 찾는다면 원래의 에러를 던집니다.
+
+                foodTruckLikeRepository.delete(concurrentLike);
+                return new FoodTruckLikeResDto(false);
+            }
         }
     }
 
