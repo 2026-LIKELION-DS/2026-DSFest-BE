@@ -16,7 +16,7 @@ import java.util.List;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/food-trucks/banners")
+@RequestMapping("/api/food-trucks/banners")
 public class FoodTruckBannerController implements FoodTruckBannerControllerDocs {
 
     private final FoodTruckBannerService foodTruckBannerService;

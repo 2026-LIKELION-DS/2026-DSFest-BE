@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.time.Clock;
 
 /**
  * 푸드트럭 도메인의 비즈니스 로직을 담당하는 서비스 클래스입니다.
@@ -31,6 +32,7 @@ public class FoodTruckService {
 
     private final FoodTruckRepository foodTruckRepository;
     private final FoodTruckMapper foodTruckMapper;
+    private final Clock clock;
 
     /**
      * 현재 서버 시간과 DB의 운영 일차(festivalDay) 정보를 비교하여 푸드트럭 목록을 조회합니다.
@@ -41,7 +43,7 @@ public class FoodTruckService {
     public List<FoodTruckListResDto> getFoodTruckList() {
         List<FoodTruck> foodTrucks = foodTruckRepository.findAllWithOperatingDays();
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(clock);
         LocalDate today = now.toLocalDate();
         LocalTime currentTime = now.toLocalTime();
 
@@ -97,7 +99,7 @@ public class FoodTruckService {
      * @return 축제 일차 (1, 2, 3), 축제 기간이 아닐 경우 -1 반환
      */
     private int getFestivalDayFromDate(LocalDate date) {
-        if (date.equals(LocalDate.of(2026, 5, 13))) return 1;
+        if (date.equals(LocalDate.of(2026, 4, 24))) return 1;
         if (date.equals(LocalDate.of(2026, 5, 14))) return 2;
         if (date.equals(LocalDate.of(2026, 5, 15))) return 3;
 
