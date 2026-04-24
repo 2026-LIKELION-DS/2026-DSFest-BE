@@ -24,6 +24,13 @@ public class LiveTalkController {
     return ResponseEntity.ok(ApiResponse.onSuccess(liveTalkService.getRecentMessages()));
   }
 
+  // 이전 메시지
+  @GetMapping("/messages/before")
+  public ResponseEntity<ApiResponse<List<ChatMessageResDto>>> getMessagesBefore(
+      @RequestParam Long messageId) {
+    return ResponseEntity.ok(ApiResponse.onSuccess(liveTalkService.getMessagesBefore(messageId)));
+  }
+
   // 읽음 처리
   @PatchMapping("/read")
   public ResponseEntity<ApiResponse<Void>> markAsRead(@RequestParam String guestUuid) {

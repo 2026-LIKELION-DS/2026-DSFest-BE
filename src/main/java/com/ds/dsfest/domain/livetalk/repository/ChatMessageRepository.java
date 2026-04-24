@@ -12,6 +12,8 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
 
   List<ChatMessage> findTop50ByOrderByCreatedAtDesc();
 
+  List<ChatMessage> findTop50ByIdLessThanOrderByIdDesc(Long messageId);
+
   long countByCreatedAtAfterAndGuestUser_UuidNot(LocalDateTime lastReadAt, UUID guestUuid);
 
   long countByGuestUser_UuidNot(UUID guestUuid);
