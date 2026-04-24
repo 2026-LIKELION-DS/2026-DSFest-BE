@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * 푸드트럭 배너 API 컨트롤러 구현체
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/food-trucks/banners")
@@ -18,6 +21,9 @@ public class FoodTruckBannerController implements FoodTruckBannerControllerDocs 
 
     private final FoodTruckBannerService foodTruckBannerService;
 
+    /**
+     * 배너 목록 조회 API
+     */
     @GetMapping
     @Override
     public ResponseEntity<ApiResponse<List<FoodTruckBannerResDto>>> getFoodTruckBanners() {
