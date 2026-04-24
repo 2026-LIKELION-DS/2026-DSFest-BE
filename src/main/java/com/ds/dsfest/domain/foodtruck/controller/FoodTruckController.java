@@ -16,7 +16,7 @@ import java.util.List;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/food-trucks")
+@RequestMapping("/api/food-trucks")
 public class FoodTruckController implements FoodTruckControllerDocs {
 
     private final FoodTruckService foodTruckService;
