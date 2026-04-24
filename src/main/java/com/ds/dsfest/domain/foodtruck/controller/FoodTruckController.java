@@ -2,7 +2,7 @@ package com.ds.dsfest.domain.foodtruck.controller;
 
 import com.ds.dsfest.domain.foodtruck.dto.FoodTruckListResDto;
 import com.ds.dsfest.domain.foodtruck.service.FoodTruckService;
-import com.ds.dsfest.global.response.ApiResponse; // ⬅️ 완벽하게 찾아낸 올바른 경로!
+import com.ds.dsfest.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,7 @@ public class FoodTruckController implements FoodTruckControllerDocs {
     private final FoodTruckService foodTruckService;
 
     /**
-     * 배너 목록 조회 API
+     * 푸드트럭 목록 조회 API
      */
     @GetMapping
     @Override

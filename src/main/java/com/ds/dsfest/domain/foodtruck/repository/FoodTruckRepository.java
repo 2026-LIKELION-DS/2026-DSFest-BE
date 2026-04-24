@@ -14,8 +14,8 @@ import java.util.List;
 public interface FoodTruckRepository extends JpaRepository<FoodTruck, Long> {
 
     /**
-     * 모든 푸드트럭 목록을 조회합니다.
+     * 푸드트럭과 운영 일정(operatingDays)을 한 번의 쿼리로 함께 조회합니다.
      */
-    @Query("SELECT f FROM FoodTruck f")
-    List<FoodTruck> findAllFoodTrucks();
+    @Query("SELECT DISTINCT f FROM FoodTruck f JOIN FETCH f.operatingDays")
+    List<FoodTruck> findAllWithOperatingDays();
 }

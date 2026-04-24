@@ -39,7 +39,7 @@ public class FoodTruckService {
      * @return 운영 상태 및 오늘 일정이 포함된 푸드트럭 리스트 응답 DTO 목록
      */
     public List<FoodTruckListResDto> getFoodTruckList() {
-        List<FoodTruck> foodTrucks = foodTruckRepository.findAll();
+        List<FoodTruck> foodTrucks = foodTruckRepository.findAllWithOperatingDays();
 
         LocalDateTime now = LocalDateTime.now();
         LocalDate today = now.toLocalDate();
