@@ -1,7 +1,14 @@
 package com.ds.dsfest.domain.photocontest.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-
+/**
+ * 사진 콘테스트 출품작 상세 정보 조회를 위한 응답 DTO
+ * * @param id 사진 고유 ID
+ * @param title 사진 제목
+ * @param authorName 출품자 이름
+ * @param description 사진 설명
+ * @param imageUrl 사진 이미지 URL
+ */
 @Schema(description = "사진 상세 정보 응답 DTO")
 public record PhotoDetailResDto(
     @Schema(description = "사진 고유 ID", example = "1")

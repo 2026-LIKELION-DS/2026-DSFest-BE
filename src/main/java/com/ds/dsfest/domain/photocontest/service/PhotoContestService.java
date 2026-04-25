@@ -55,7 +55,10 @@ public class PhotoContestService {
     }
 
     /**
-     * 사진 상세 정보를 조회합니다.
+     * 특정 출품작의 상세 정보를 조회합니다.
+     * * @param photoEntryId 조회할 출품작 ID
+     * @return 조회된 출품작 데이터를 담은 DTO
+     * @throws CustomException 해당 ID의 출품작이 존재하지 않을 경우 NOT_FOUND 예외 발생
      */
     public PhotoDetailResDto getPhotoDetail(Long photoEntryId) {
         com.ds.dsfest.domain.photocontest.entity.PhotoEntry photoEntry = photoEntryRepository.findById(photoEntryId)
