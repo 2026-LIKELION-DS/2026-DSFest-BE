@@ -3,8 +3,10 @@ package com.ds.dsfest.domain.photocontest.controller;
 import com.ds.dsfest.domain.photocontest.dto.PhotoContestStatusResDto;
 import com.ds.dsfest.domain.photocontest.dto.PhotoDetailResDto;
 import com.ds.dsfest.domain.photocontest.dto.PhotoListResDto;
+import com.ds.dsfest.domain.photocontest.dto.PhotoVoteReqDto;
 import com.ds.dsfest.domain.photocontest.service.PhotoContestService;
 import com.ds.dsfest.global.response.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,5 +52,17 @@ public class PhotoContestController implements PhotoContestControllerDocs {
     public ResponseEntity<ApiResponse<PhotoListResDto>> getPhotoList() {
         PhotoListResDto result = photoContestService.getPhotoList();
         return ResponseEntity.ok(ApiResponse.onSuccess(result));
+    }
+
+    /**
+     * 사진 콘테스트 출품작 투표하기
+     */
+    @PostMapping("/vote")
+    @Override
+    public ResponseEntity<ApiResponse<String>> votePhotos(
+        @Valid @RequestBody PhotoVoteReqDto reqDto
+    ) {
+        photoContestService.votePhotos(reqDto);
+        return ResponseEntity.ok(ApiResponse.onSuccess("투표가 성공적으로 완료되었습니다."));
     }
 }
