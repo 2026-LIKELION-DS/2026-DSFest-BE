@@ -1,9 +1,12 @@
 package com.ds.dsfest.domain.photocontest.service;
 
 import com.ds.dsfest.domain.photocontest.constant.PhotoContestStatus;
+import com.ds.dsfest.domain.photocontest.constant.PhotoTheme;
 import com.ds.dsfest.domain.photocontest.dto.PhotoContestStatusResDto;
 import com.ds.dsfest.domain.photocontest.dto.PhotoDetailResDto;
+import com.ds.dsfest.domain.photocontest.dto.PhotoListResDto;
 import com.ds.dsfest.domain.photocontest.entity.PhotoContestSetting;
+import com.ds.dsfest.domain.photocontest.entity.PhotoEntry;
 import com.ds.dsfest.domain.photocontest.repository.PhotoContestSettingRepository;
 import com.ds.dsfest.domain.photocontest.repository.PhotoEntryRepository;
 import com.ds.dsfest.global.exception.CustomException;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -65,5 +69,29 @@ public class PhotoContestService {
             .orElseThrow(() -> new CustomException(GlobalErrorCode.NOT_FOUND));
 
         return PhotoDetailResDto.from(photoEntry);
+    }
+
+    /**
+     * 사진 콘테스트 출품작 목록을 주제별로 분류하여 전체 조회합니다. (A.7.2.1)
+     */
+    public PhotoListResDto getPhotoList() {
+        List<PhotoEntry> allPhotos = photoEntryRepository.findAll();
+
+        List<PhotoListResDto.PhotoSummaryDto> youthPhotos = allPhotos.stream()
+            .filter(photo -> photo.getTheme() == PhotoTheme.YOUTH)
+            .map(PhotoListResDto.PhotoSummaryDto::from)
+            .toList();
+
+        List<PhotoListResDto.PhotoSummaryDto> festivalPhotos = allPhotos.stream()
+            .filter(photo -> photo.getTheme() == PhotoTheme.FESTIVAL)
+            .map(PhotoListResDto.PhotoSummaryDto::from)
+            .toList();
+
+        List<PhotoListResDto.PhotoSummaryDto> dressCodePhotos = allPhotos.stream()
+            .filter(photo -> photo.getTheme() == PhotoTheme.DRESS_CODE)
+            .map(PhotoListResDto.PhotoSummaryDto::from)
+            .toList();
+
+        return new PhotoListResDto(youthPhotos, festivalPhotos, dressCodePhotos);
     }
 }

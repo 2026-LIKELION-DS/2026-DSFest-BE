@@ -5,3 +5,4 @@ public enum PhotoContestStatus {
   VOTING,
   ENDED
 }
+

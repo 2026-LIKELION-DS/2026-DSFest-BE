@@ -1,22 +1,14 @@
 package com.ds.dsfest.domain.photocontest.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-
+import com.ds.dsfest.domain.photocontest.constant.PhotoTheme;
 import com.ds.dsfest.global.common.BaseEntity;
-
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -42,4 +34,8 @@ public class PhotoEntry extends BaseEntity {
 
   @OneToMany(mappedBy = "photoEntry", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<PhotoVote> votes = new ArrayList<>();
+
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, length = 20)
+  private PhotoTheme theme;
 }

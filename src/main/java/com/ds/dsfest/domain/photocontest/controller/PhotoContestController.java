@@ -2,14 +2,12 @@ package com.ds.dsfest.domain.photocontest.controller;
 
 import com.ds.dsfest.domain.photocontest.dto.PhotoContestStatusResDto;
 import com.ds.dsfest.domain.photocontest.dto.PhotoDetailResDto;
+import com.ds.dsfest.domain.photocontest.dto.PhotoListResDto;
 import com.ds.dsfest.domain.photocontest.service.PhotoContestService;
 import com.ds.dsfest.global.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +27,7 @@ public class PhotoContestController implements PhotoContestControllerDocs {
     }
 
     /**
-     * 사진 콘테스트 출품작 상세 조회 (A.7.2.3)
+     * 사진 콘테스트 출품작 상세 조회
      *
      * @param photoEntryId 상세 조회할 출품작의 고유 ID
      * @return 출품작 상세 정보(제목, 작성자, 설명, 이미지 URL)를 담은 PhotoDetailResDto
@@ -40,6 +38,17 @@ public class PhotoContestController implements PhotoContestControllerDocs {
         @PathVariable(name = "photoEntryId") Long photoEntryId
     ) {
         PhotoDetailResDto result = photoContestService.getPhotoDetail(photoEntryId);
+        return ResponseEntity.ok(ApiResponse.onSuccess(result));
+    }
+
+    /**
+     * 사진 콘테스트 출품작 목록 조회
+     * 주제별로 그룹화된 리스트를 반환합니다.
+     */
+    @GetMapping
+    @Override
+    public ResponseEntity<ApiResponse<PhotoListResDto>> getPhotoList() {
+        PhotoListResDto result = photoContestService.getPhotoList();
         return ResponseEntity.ok(ApiResponse.onSuccess(result));
     }
 }
