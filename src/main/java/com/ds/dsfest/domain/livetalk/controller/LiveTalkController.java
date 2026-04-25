@@ -50,7 +50,7 @@ public class LiveTalkController {
   private final ChatTopicService chatTopicService;
 // 대화 주제
   @GetMapping("/topics/current")
-    public ChatTopicResDto getCurrentTopic() {
-        return chatTopicService.getCurrentTopic();
-    }
+  public ResponseEntity<ApiResponse<ChatTopicResDto>> getCurrentTopic() {
+      return ResponseEntity.ok(ApiResponse.onSuccess(chatTopicService.getCurrentTopic()));
+  }
 }

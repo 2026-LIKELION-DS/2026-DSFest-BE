@@ -32,7 +32,7 @@ public class LiveTalkService {
   @Transactional(readOnly = true)
   public List<ChatMessageResDto> getRecentMessages() {
     return chatMessageRepository.findTop50ByOrderByCreatedAtDesc().stream()
-        .sorted((a, b) -> a.getCreatedAt().compareTo(b.getCreatedAt()))
+        .sorted((a, b) -> a.getId().compareTo(b.getId()))
         .map(chatMessageMapper::toResDto)
         .toList();
   }
