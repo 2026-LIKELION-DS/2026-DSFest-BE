@@ -2,8 +2,10 @@ package com.ds.dsfest.domain.photocontest.service;
 
 import com.ds.dsfest.domain.photocontest.constant.PhotoContestStatus;
 import com.ds.dsfest.domain.photocontest.dto.PhotoContestStatusResDto;
+import com.ds.dsfest.domain.photocontest.dto.PhotoDetailResDto;
 import com.ds.dsfest.domain.photocontest.entity.PhotoContestSetting;
 import com.ds.dsfest.domain.photocontest.repository.PhotoContestSettingRepository;
+import com.ds.dsfest.domain.photocontest.repository.PhotoEntryRepository;
 import com.ds.dsfest.global.exception.CustomException;
 import com.ds.dsfest.global.exception.GlobalErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import java.time.LocalDateTime;
 public class PhotoContestService {
 
     private final PhotoContestSettingRepository photoContestSettingRepository;
+    private final PhotoEntryRepository photoEntryRepository;
 
     /**
      * 사진 콘테스트의 현재 상태 및 마감 시간을 반환합니다.
@@ -49,5 +52,18 @@ public class PhotoContestService {
             setting.getStartTime(),
             setting.getEndTime()
         );
+    }
+
+    /**
+     * 특정 출품작의 상세 정보를 조회합니다.
+     * * @param photoEntryId 조회할 출품작 ID
+     * @return 조회된 출품작 데이터를 담은 DTO
+     * @throws CustomException 해당 ID의 출품작이 존재하지 않을 경우 NOT_FOUND 예외 발생
+     */
+    public PhotoDetailResDto getPhotoDetail(Long photoEntryId) {
+        com.ds.dsfest.domain.photocontest.entity.PhotoEntry photoEntry = photoEntryRepository.findById(photoEntryId)
+            .orElseThrow(() -> new CustomException(GlobalErrorCode.NOT_FOUND));
+
+        return PhotoDetailResDto.from(photoEntry);
     }
 }
