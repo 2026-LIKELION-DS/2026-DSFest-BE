@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ds.dsfest.domain.livetalk.dto.ChatMessageResDto;
 import com.ds.dsfest.domain.livetalk.entity.ChatMessage;
-import com.ds.dsfest.domain.livetalk.entity.ChatReadStatus;
 import com.ds.dsfest.domain.livetalk.mapper.ChatMessageMapper;
 import com.ds.dsfest.domain.livetalk.repository.ChatMessageRepository;
 import com.ds.dsfest.domain.livetalk.repository.ChatReadStatusRepository;
@@ -32,9 +31,15 @@ public class LiveTalkService {
 
   @Transactional(readOnly = true)
   public List<ChatMessageResDto> getRecentMessages() {
-    List<ChatMessage> messages = chatMessageRepository.findTop50ByOrderByCreatedAtDesc();
+    return chatMessageRepository.findTop50ByOrderByCreatedAtDesc().stream()
+        .sorted((a, b) -> a.getCreatedAt().compareTo(b.getCreatedAt()))
+        .map(chatMessageMapper::toResDto)
+        .toList();
+  }
 
-    return messages.stream()
+  @Transactional(readOnly = true)
+  public List<ChatMessageResDto> getMessagesBefore(Long messageId) {
+    return chatMessageRepository.findTop50ByIdLessThanOrderByIdDesc(messageId).stream()
         .sorted((a, b) -> a.getCreatedAt().compareTo(b.getCreatedAt()))
         .map(chatMessageMapper::toResDto)
         .toList();
@@ -76,27 +81,19 @@ public class LiveTalkService {
   // ✅ 읽음 처리
   @Transactional
   public void markAsRead(String guestUuid) {
-    parseUuid(guestUuid); // 유효성 체크
+    String normalizedGuestUuid = parseUuid(guestUuid).toString();
 
-    LocalDateTime now = LocalDateTime.now();
-
-    ChatReadStatus status =
-        chatReadStatusRepository
-            .findByGuestUuid(guestUuid)
-            .orElseGet(() -> new ChatReadStatus(guestUuid, now));
-
-    status.updateLastReadAt(now);
-
-    chatReadStatusRepository.save(status);
+    chatReadStatusRepository.upsertReadStatus(normalizedGuestUuid, LocalDateTime.now());
   }
 
   // ✅ 안 읽은 메시지 수
   @Transactional(readOnly = true)
   public long getUnreadCount(String guestUuid) {
     UUID uuid = parseUuid(guestUuid);
+    String normalizedGuestUuid = uuid.toString();
 
     return chatReadStatusRepository
-        .findByGuestUuid(guestUuid)
+        .findByGuestUuid(normalizedGuestUuid)
         .map(
             status ->
                 chatMessageRepository.countByCreatedAtAfterAndGuestUser_UuidNot(
