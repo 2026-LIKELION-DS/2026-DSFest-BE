@@ -21,6 +21,6 @@ public record PhotoVoteReqDto(
     @Schema(description = "선택한 사진 ID 목록 (반드시 3개)", example = "[1, 8, 15]")
     @NotNull(message = "투표할 사진을 선택해주세요.")
     @Size(min = 3, max = 3, message = "각 주제별로 1장씩, 총 3장을 선택해야 합니다.")
-    List<Long> photoEntryIds
+    List<@NotNull(message = "사진 ID는 null일 수 없습니다.") Long> photoEntryIds
 ) {
 }

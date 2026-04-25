@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 import java.util.Map;
 
-@Tag(name = "Admin - 사진 콘테스트", description = "총학생회 전용 사진 콘테스트 투표 결과 관리 API")
+@Tag(name = "Admin Photo Contest", description = "총학생회 전용 사진 콘테스트 투표 결과 관리 API")
 @SecurityRequirement(name = "BearerAuth")
 public interface AdminPhotoContestControllerDocs {
 
