@@ -10,8 +10,13 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +33,7 @@ public class StudentDataInitializer implements ApplicationRunner {
 
     @Override
     @Transactional
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         if (verifiedStudentRepository.count() > 0) return;
 
         List<VerifiedStudent> allVerified = new ArrayList<>();
@@ -41,7 +46,12 @@ public class StudentDataInitializer implements ApplicationRunner {
             verifiedStudentRepository.saveAll(allVerified);
             log.info("RDS DB에 해시 데이터 저장 완료.");
 
-            deleteSecurityFiles(formattedPath);
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    deleteSecurityFiles(formattedPath);
+                }
+            });
         }
     }
 
@@ -51,7 +61,7 @@ public class StudentDataInitializer implements ApplicationRunner {
             File file = new File(path + fileName);
             if (file.exists() && !csvPath.contains("classpath")) {
                 if (file.delete()) {
-                    log.info("보안을 위해 원본 파일이 삭제되었습니다: {}", fileName);
+                    log.info("보안 삭제 완료: {}", fileName);
                 }
             }
         }
@@ -74,7 +84,8 @@ public class StudentDataInitializer implements ApplicationRunner {
                 }
             }
         } catch (Exception e) {
-            log.error("파일 처리 중 오류 발생: {}", e.getMessage());
+            log.error("파일 처리 중 치명적 오류 발생: {}", filePath);
+            throw new IllegalStateException("학생 데이터 파일 처리 실패: " + filePath, e);
         }
     }
 }
