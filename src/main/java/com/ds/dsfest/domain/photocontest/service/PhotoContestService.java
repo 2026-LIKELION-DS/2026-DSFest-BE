@@ -2,21 +2,25 @@ package com.ds.dsfest.domain.photocontest.service;
 
 import com.ds.dsfest.domain.photocontest.constant.PhotoContestStatus;
 import com.ds.dsfest.domain.photocontest.constant.PhotoTheme;
-import com.ds.dsfest.domain.photocontest.dto.PhotoContestStatusResDto;
-import com.ds.dsfest.domain.photocontest.dto.PhotoDetailResDto;
-import com.ds.dsfest.domain.photocontest.dto.PhotoListResDto;
+import com.ds.dsfest.domain.photocontest.dto.*;
 import com.ds.dsfest.domain.photocontest.entity.PhotoContestSetting;
 import com.ds.dsfest.domain.photocontest.entity.PhotoEntry;
+import com.ds.dsfest.domain.photocontest.entity.PhotoVote;
 import com.ds.dsfest.domain.photocontest.repository.PhotoContestSettingRepository;
 import com.ds.dsfest.domain.photocontest.repository.PhotoEntryRepository;
+import com.ds.dsfest.domain.photocontest.repository.PhotoVoteRepository;
+import com.ds.dsfest.domain.photocontest.repository.VerifiedStudentRepository;
 import com.ds.dsfest.global.exception.CustomException;
 import com.ds.dsfest.global.exception.GlobalErrorCode;
+import com.ds.dsfest.global.util.IdentityHasher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +29,8 @@ public class PhotoContestService {
 
     private final PhotoContestSettingRepository photoContestSettingRepository;
     private final PhotoEntryRepository photoEntryRepository;
+    private final PhotoVoteRepository photoVoteRepository;
+    private final VerifiedStudentRepository verifiedStudentRepository;
 
     /**
      * 사진 콘테스트의 현재 상태 및 마감 시간을 반환합니다.
@@ -72,7 +78,7 @@ public class PhotoContestService {
     }
 
     /**
-     * 사진 콘테스트 출품작 목록을 주제별로 분류하여 전체 조회합니다. (A.7.2.1)
+     * 사진 콘테스트 출품작 목록을 주제별로 분류하여 전체 조회합니다.
      */
     public PhotoListResDto getPhotoList() {
         List<PhotoEntry> allPhotos = photoEntryRepository.findAllByOrderByCreatedAtDesc();
@@ -93,5 +99,84 @@ public class PhotoContestService {
             .toList();
 
         return new PhotoListResDto(youthPhotos, festivalPhotos, dressCodePhotos);
+    }
+
+    /**
+     * 사진 콘테스트 투표를 검증하고 저장합니다.
+     */
+    @Transactional
+    public void votePhotos(PhotoVoteReqDto reqDto) {
+        String currentHash = IdentityHasher.hashIdentity(reqDto.studentId(), reqDto.studentName(), "재학생"); // 재학생 해시
+        String leaveHash = IdentityHasher.hashIdentity("학사", reqDto.studentId(), "휴학생"); // 휴학생 해시
+
+        String voterKey = null;
+
+        if (verifiedStudentRepository.existsById(currentHash)) { // 재학생 명단
+            voterKey = currentHash;
+        }
+        else if (verifiedStudentRepository.existsById(leaveHash)) { // 휴학생 명단 ('학사' 키워드)
+            voterKey = leaveHash;
+        }
+        else {
+            throw new CustomException(GlobalErrorCode.NOT_FOUND);
+        }
+
+        /**
+         * 중복 투표 검증 (이미 이 해시로 투표했는지 확인)
+         */
+        if (photoVoteRepository.existsByVoterKey(voterKey)) {
+            throw new CustomException(GlobalErrorCode.BAD_REQUEST);
+        }
+
+        /**
+         * 선택한 사진들 조회 및 검증
+         */
+        List<PhotoEntry> selectedPhotos = photoEntryRepository.findAllById(reqDto.photoEntryIds());
+        if (selectedPhotos.size() != 3) {
+            throw new CustomException(GlobalErrorCode.NOT_FOUND);
+        }
+
+        /**
+         * 주제(Theme) 중복 체크
+         */
+        long themeCount = selectedPhotos.stream().map(PhotoEntry::getTheme).distinct().count();
+        if (themeCount != 3) {
+            throw new CustomException(GlobalErrorCode.BAD_REQUEST);
+        }
+
+        /**
+         * 투표 내역 저장
+         */
+        String finalVoterKey = voterKey;
+        List<PhotoVote> votes = selectedPhotos.stream()
+            .map(photo -> new PhotoVote(photo, finalVoterKey))
+            .toList();
+
+        photoVoteRepository.saveAll(votes);
+    }
+
+    /**
+     * 총 학생용 투표 결과 집계 (테마별 분류)
+     */
+    @Transactional(readOnly = true)
+    public Map<String, List<PhotoRankResDto>> getVoteResults() {
+        List<Object[]> results = photoVoteRepository.countVotesPerPhoto();
+
+        List<PhotoRankResDto> allRanks = results.stream().map(result -> {
+            Long photoId = (Long) result[0];
+            Long count = (Long) result[1];
+            PhotoEntry photo = photoEntryRepository.findById(photoId).orElseThrow();
+
+            return new PhotoRankResDto(
+                photo.getId(),
+                photo.getTitle(),
+                photo.getAuthorName(),
+                photo.getTheme().name(),
+                count
+            );
+        }).toList();
+
+        return allRanks.stream()
+            .collect(Collectors.groupingBy(PhotoRankResDto::theme));
     }
 }

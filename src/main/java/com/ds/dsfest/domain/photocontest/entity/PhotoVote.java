@@ -1,16 +1,7 @@
 package com.ds.dsfest.domain.photocontest.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-
 import com.ds.dsfest.global.common.BaseEntity;
-
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +20,11 @@ public class PhotoVote extends BaseEntity {
   @JoinColumn(name = "photo_entry_id", nullable = false)
   private PhotoEntry photoEntry;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "student_id", nullable = false)
-  private Student student;
+  @Column(nullable = false, length = 64)
+  private String voterKey;
+
+  public PhotoVote(PhotoEntry photoEntry, String voterKey) {
+      this.photoEntry = photoEntry;
+      this.voterKey = voterKey;
+  }
 }

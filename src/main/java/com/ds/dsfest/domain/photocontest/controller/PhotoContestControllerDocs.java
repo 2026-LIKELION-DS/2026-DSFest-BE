@@ -3,9 +3,12 @@ package com.ds.dsfest.domain.photocontest.controller;
 import com.ds.dsfest.domain.photocontest.dto.PhotoContestStatusResDto;
 import com.ds.dsfest.domain.photocontest.dto.PhotoDetailResDto;
 import com.ds.dsfest.domain.photocontest.dto.PhotoListResDto;
+import com.ds.dsfest.domain.photocontest.dto.PhotoVoteReqDto;
 import com.ds.dsfest.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -22,4 +25,9 @@ public interface PhotoContestControllerDocs {
 
     @Operation(summary = "사진 목록 조회", description = "주제별(청춘, 축제, 드레스코드)로 분류된 사진 목록을 조회합니다.")
     ResponseEntity<ApiResponse<PhotoListResDto>> getPhotoList();
+
+    @Operation(summary = "사진 투표하기", description = "선택한 3장의 사진에 투표합니다. (1인 1회 제한, 주제별 1장씩 필수)")
+    ResponseEntity<ApiResponse<String>> votePhotos(
+        @Valid @RequestBody PhotoVoteReqDto reqDto
+    );
 }
