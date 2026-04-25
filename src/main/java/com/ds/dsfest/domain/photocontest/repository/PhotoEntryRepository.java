@@ -9,5 +9,5 @@ public interface PhotoEntryRepository extends JpaRepository<PhotoEntry, Long> {
     /**
      * 모든 출품작을 생성 순으로 조회합니다.
      */
-    List<PhotoEntry> findAllByOrderByCreatedAtAsc();
+    List<PhotoEntry> findAllByOrderByCreatedAtDesc();
 }
