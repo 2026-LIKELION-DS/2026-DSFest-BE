@@ -1,5 +1,6 @@
 package com.ds.dsfest.domain.photocontest.service;
 
+import com.ds.dsfest.domain.photocontest.constant.PhotoContestStatus;
 import com.ds.dsfest.domain.photocontest.dto.PhotoContestStatusResDto;
 import com.ds.dsfest.domain.photocontest.entity.PhotoContestSetting;
 import com.ds.dsfest.domain.photocontest.repository.PhotoContestSettingRepository;
@@ -8,6 +9,8 @@ import com.ds.dsfest.global.exception.GlobalErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +27,25 @@ public class PhotoContestService {
         PhotoContestSetting setting = photoContestSettingRepository.findById(1L)
             .orElseThrow(() -> new CustomException(GlobalErrorCode.NOT_FOUND));
 
+        if (setting.getStartTime() == null || setting.getEndTime() == null) {
+            throw new CustomException(GlobalErrorCode.INVALID_INPUT);
+        }
+        if (!setting.getStartTime().isBefore(setting.getEndTime())) {
+            throw new CustomException(GlobalErrorCode.INVALID_INPUT);
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        PhotoContestStatus derivedStatus;
+        if (now.isBefore(setting.getStartTime())) {
+            derivedStatus = PhotoContestStatus.ACCEPTING;
+        } else if (now.isBefore(setting.getEndTime())) {
+            derivedStatus = PhotoContestStatus.VOTING;
+        } else {
+            derivedStatus = PhotoContestStatus.ENDED;
+        }
+
         return new PhotoContestStatusResDto(
-            setting.getStatus().name(),
+            derivedStatus.name(),
             setting.getStartTime(),
             setting.getEndTime()
         );
