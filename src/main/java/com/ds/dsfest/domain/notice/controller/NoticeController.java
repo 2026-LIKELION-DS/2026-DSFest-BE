@@ -41,7 +41,7 @@ public class NoticeController implements NoticeControllerDocs {
 
   @GetMapping("/{noticeId}")
   @Override
-  public ResponseEntity<ApiResponse<NoticeDetailResDto>> getNoticeDetail(@PathVaable Long noticeId) {
+  public ResponseEntity<ApiResponse<NoticeDetailResDto>> getNoticeDetail(@PathVariable Long noticeId) {
       return ResponseEntity.ok(ApiResponse.onSuccess(noticeService.getNoticeDetailWithViewCount(noticeId)));
   }
 
