@@ -13,11 +13,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Notice", description = "공지사항 사용자 API")
 public interface NoticeControllerDocs {
+  /**
+   * Retrieve the entire list of notices ordered by newest first.
+   *
+   * @return ResponseEntity containing an ApiResponse with a List of NoticeListItemResDto representing notices ordered from newest to oldest.
+   */
   @Operation(
       summary = "공지 전체 목록 조회",
       description = "최신순 공지 전체 리스트를 반환합니다.")
   ResponseEntity<ApiResponse<List<NoticeListItemResDto>>> getNoticeList();
 
+  /**
+   * Retrieve the latest urgent notice's id and title.
+   *
+   * Returns the most recent notice marked as urgent. If no urgent notice exists, the `result` will be `null`.
+   *
+   * @return ApiResponse whose `result` is an UrgentNoticeResDto containing the latest urgent notice's `id` and `title`, or `null` if none exists.
+   */
   @Operation(
       summary = "긴급공지 조회",
       description = "긴급 플래그가 설정된 공지 중 가장 최신 1건의 id와 제목을 반환합니다. 긴급공지가 없으면 result가 null입니다.")

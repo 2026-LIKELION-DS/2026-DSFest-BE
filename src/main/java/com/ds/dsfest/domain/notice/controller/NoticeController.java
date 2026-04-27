@@ -22,12 +22,22 @@ public class NoticeController implements NoticeControllerDocs {
 
   private final NoticeService noticeService;
 
+  /**
+   * Retrieves the list of notices.
+   *
+   * @return a ResponseEntity with status 200 (OK) containing an ApiResponse that wraps the list of notice list items.
+   */
   @GetMapping
   @Override
   public ResponseEntity<ApiResponse<List<NoticeListItemResDto>>> getNoticeList() {
     return ResponseEntity.ok(ApiResponse.onSuccess(noticeService.getNoticeList()));
   }
 
+  /**
+   * Retrieve the current urgent notice.
+   *
+   * @return ResponseEntity with HTTP 200 whose body is an ApiResponse containing the urgent notice DTO
+   */
   @GetMapping("/urgent")
   public ResponseEntity<ApiResponse<UrgentNoticeResDto>> getUrgentNotice() {
     return ResponseEntity.ok(ApiResponse.onSuccess(noticeService.getUrgentNotice()));
