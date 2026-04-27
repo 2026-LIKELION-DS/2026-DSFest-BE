@@ -49,7 +49,7 @@ public class AdminNoticeController implements AdminNoticeControllerDocs {
   @GetMapping("/{noticeId}")
   public ResponseEntity<ApiResponse<NoticeDetailResDto>> getNoticeDetail(
       @PathVariable Long noticeId) {
-    return ResponseEntity.ok(ApiResponse.onSuccess(noticeService.getNoticeDetail(noticeId)));
+    return ResponseEntity.ok(ApiResponse.onSuccess(noticeService.getNoticeDetailWithViewCount(noticeId)));
   }
 
   @PutMapping(value = "/{noticeId}", consumes = "multipart/form-data")
