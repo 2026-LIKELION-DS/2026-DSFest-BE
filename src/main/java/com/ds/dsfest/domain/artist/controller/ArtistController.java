@@ -32,4 +32,10 @@ public class ArtistController implements ArtistControllerDocs {
       @PathVariable Long artistId) {
     return ResponseEntity.ok(ApiResponse.onSuccess(artistService.getArtistPlaylist(artistId)));
   }
+
+  @GetMapping("/today")
+  @Override
+  public ResponseEntity<ApiResponse<List<ArtistListResDto>>> getArtistsByToday() {
+    return ResponseEntity.ok(ApiResponse.onSuccess(artistService.getArtistsByToday()));
+  }
 }

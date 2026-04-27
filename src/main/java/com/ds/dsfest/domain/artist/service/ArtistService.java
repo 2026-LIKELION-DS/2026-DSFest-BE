@@ -1,12 +1,5 @@
 package com.ds.dsfest.domain.artist.service;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.ds.dsfest.domain.artist.dto.ArtistListResDto;
 import com.ds.dsfest.domain.artist.dto.ArtistPlaylistResDto;
 import com.ds.dsfest.domain.artist.entity.Artist;
@@ -14,8 +7,14 @@ import com.ds.dsfest.domain.artist.entity.CountdownStatus;
 import com.ds.dsfest.domain.artist.exception.ArtistErrorCode;
 import com.ds.dsfest.domain.artist.repository.ArtistRepository;
 import com.ds.dsfest.global.exception.CustomException;
-
+import java.time.Clock;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class ArtistService {
 
   private final ArtistRepository artistRepository;
+  private final Clock festivalClock;
 
   public List<ArtistListResDto> getArtistsByDay(int day) {
     List<Artist> artists = artistRepository.findByFestivalDayOrderByStartTimeAsc(day);
@@ -45,6 +45,29 @@ public class ArtistService {
                     .build())
         .toList();
   }
+
+    public List<ArtistListResDto> getArtistsByToday() {
+        LocalDate today = LocalDate.now(festivalClock); // 아티스트 공연 날짜가 오늘인 것만 조회
+        List<Artist> artists = artistRepository.findByPerformanceDateOrderByStartTimeAsc(today);
+
+        return artists.stream()
+            .map(
+                artist ->
+                    ArtistListResDto.builder()
+                        .id(artist.getId())
+                        .name(artist.getName())
+                        .shortBio(artist.getShortBio())
+                        .imageUrl(artist.getImageUrl())
+                        .festivalDay(artist.getFestivalDay())
+                        .performanceDate(artist.getPerformanceDate())
+                        .startTime(artist.getStartTime())
+                        .endTime(artist.getEndTime())
+                        .instagramUrl(artist.getInstagramUrl())
+                        .youtubeUrl(artist.getYoutubeUrl())
+                        .countdownStatus(calculateCountdownStatus(artist))
+                        .build())
+            .toList();
+    }
 
   public ArtistPlaylistResDto getArtistPlaylist(Long artistId) {
     Artist artist = getArtistById(artistId);
