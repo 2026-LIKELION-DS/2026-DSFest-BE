@@ -1,19 +1,22 @@
 package com.ds.dsfest.domain.notice.controller;
 
-import jakarta.validation.constraints.NotBlank;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
-
+import com.ds.dsfest.domain.notice.dto.NoticeListItemResDto;
 import com.ds.dsfest.domain.notice.dto.NoticeSearchResDto;
 import com.ds.dsfest.domain.notice.dto.UrgentNoticeResDto;
 import com.ds.dsfest.global.response.ApiResponse;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
+import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Notice", description = "공지사항 사용자 API")
 public interface NoticeControllerDocs {
+  @Operation(
+      summary = "공지 전체 목록 조회",
+      description = "최신순 공지 전체 리스트를 반환합니다.")
+  ResponseEntity<ApiResponse<List<NoticeListItemResDto>>> getNoticeList();
 
   @Operation(
       summary = "긴급공지 조회",
