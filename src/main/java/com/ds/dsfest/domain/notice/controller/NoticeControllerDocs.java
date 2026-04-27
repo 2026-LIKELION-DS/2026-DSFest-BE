@@ -1,6 +1,7 @@
 package com.ds.dsfest.domain.notice.controller;
 
 import com.ds.dsfest.domain.notice.constant.NoticeCategory;
+import com.ds.dsfest.domain.notice.dto.NoticeDetailResDto;
 import com.ds.dsfest.domain.notice.dto.NoticeListItemResDto;
 import com.ds.dsfest.domain.notice.dto.NoticeSearchResDto;
 import com.ds.dsfest.domain.notice.dto.UrgentNoticeResDto;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Notice", description = "공지사항 사용자 API")
@@ -26,6 +28,12 @@ public interface NoticeControllerDocs {
   ResponseEntity<ApiResponse<List<NoticeListItemResDto>>> getNoticesByCategory(
      @RequestParam NoticeCategory category
   );
+
+  @Operation(
+      summary = "공지 상세 조회",
+      description = "공지 id로 상세 정보(사진 포함) 반환"
+  )
+  ResponseEntity<ApiResponse<NoticeDetailResDto>> getNoticeDetail(@PathVariable Long noticeId);
 
   @Operation(
       summary = "긴급공지 조회",
