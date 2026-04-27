@@ -1,5 +1,6 @@
 package com.ds.dsfest.domain.notice.controller;
 
+import com.ds.dsfest.domain.notice.constant.NoticeCategory;
 import com.ds.dsfest.domain.notice.dto.NoticeListItemResDto;
 import com.ds.dsfest.domain.notice.dto.NoticeSearchResDto;
 import com.ds.dsfest.domain.notice.dto.UrgentNoticeResDto;
@@ -26,6 +27,14 @@ public class NoticeController implements NoticeControllerDocs {
   @Override
   public ResponseEntity<ApiResponse<List<NoticeListItemResDto>>> getNoticeList() {
     return ResponseEntity.ok(ApiResponse.onSuccess(noticeService.getNoticeList()));
+  }
+
+  @GetMapping("/category")
+  @Override
+  public ResponseEntity<ApiResponse<List<NoticeListItemResDto>>> getNoticesByCategory(
+      @RequestParam NoticeCategory category
+  ) {
+     return ResponseEntity.ok(ApiResponse.onSuccess(noticeService.getNoticeListByCategory(category)));
   }
 
   @GetMapping("/urgent")
