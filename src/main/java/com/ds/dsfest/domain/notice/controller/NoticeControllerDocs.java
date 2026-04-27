@@ -45,4 +45,10 @@ public interface NoticeControllerDocs {
       description = "keyword로 제목·본문을 검색합니다. 결과가 없으면 results는 빈 배열, recommended에 조회수 상위 3개가 담깁니다.")
   ResponseEntity<ApiResponse<NoticeSearchResDto>> searchNotices(
       @RequestParam @NotBlank String keyword);
+
+  @Operation(
+      summary = "자주 찾는 공지 조회",
+      description = "조회수 상위 4개의 공지사항 목록을 반환합니다."
+  )
+  ResponseEntity<ApiResponse<List<NoticeListItemResDto>>> getFrequentNotices();
 }

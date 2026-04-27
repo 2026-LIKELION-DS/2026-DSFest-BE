@@ -55,4 +55,10 @@ public class NoticeController implements NoticeControllerDocs {
       @RequestParam String keyword) {
     return ResponseEntity.ok(ApiResponse.onSuccess(noticeService.searchNotices(keyword)));
   }
+
+  @GetMapping("/frequent")
+  @Override
+  public ResponseEntity<ApiResponse<List<NoticeListItemResDto>>> getFrequentNotices() {
+      return ResponseEntity.ok(ApiResponse.onSuccess(noticeService.getFrequentNoticeList()));
+  }
 }
