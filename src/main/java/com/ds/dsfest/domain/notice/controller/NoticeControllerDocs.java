@@ -1,5 +1,6 @@
 package com.ds.dsfest.domain.notice.controller;
 
+import com.ds.dsfest.domain.notice.constant.NoticeCategory;
 import com.ds.dsfest.domain.notice.dto.NoticeListItemResDto;
 import com.ds.dsfest.domain.notice.dto.NoticeSearchResDto;
 import com.ds.dsfest.domain.notice.dto.UrgentNoticeResDto;
@@ -17,6 +18,14 @@ public interface NoticeControllerDocs {
       summary = "공지 전체 목록 조회",
       description = "최신순 공지 전체 리스트를 반환합니다.")
   ResponseEntity<ApiResponse<List<NoticeListItemResDto>>> getNoticeList();
+
+  @Operation(
+      summary = "카테고리별 공지 목록 조회",
+      description = "공지 카테고리로 필터링된 리스트를 최신순으로 반환합니다."
+  )
+  ResponseEntity<ApiResponse<List<NoticeListItemResDto>>> getNoticesByCategory(
+     @RequestParam NoticeCategory category
+  );
 
   @Operation(
       summary = "긴급공지 조회",
