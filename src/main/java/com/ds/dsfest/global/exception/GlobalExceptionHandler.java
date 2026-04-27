@@ -62,7 +62,7 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ApiResponse<Void>> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
       log.warn("MethodArgumentTypeMismatchException: {}", e.getMessage());
       return ResponseEntity.status(GlobalErrorCode.INVALID_INPUT.getStatus())
-          .body(ApiResponse.onFailure(GlobalErrorCode.INVALID_INPUT, "잘못된 입력 값입니다: " + e.getValue()));
+          .body(ApiResponse.onFailure(GlobalErrorCode.INVALID_INPUT));
   }
 
   /** 존재하지 않는 경로 (favicon.ico 등 브라우저 기본 요청 포함) */
