@@ -99,7 +99,7 @@ public class NoticeService {
 
     List<NoticeListItemResDto> recommended =
         results.isEmpty()
-            ? noticeRepository.findTop4ByOrderByViewCountDesc().stream()
+            ? noticeRepository.findTop4ByOrderByViewCountDescCreatedAtDesc().stream()
                 .map(NoticeListItemResDto::from)
                 .toList()
             : List.of();
@@ -157,7 +157,7 @@ public class NoticeService {
 
    @Transactional(readOnly = true)
    public List<NoticeListItemResDto> getFrequentNoticeList() {
-      return noticeRepository.findTop4ByOrderByViewCountDesc().stream()
+      return noticeRepository.findTop4ByOrderByViewCountDescCreatedAtDesc().stream()
           .map(NoticeListItemResDto::from)
           .toList();
   }

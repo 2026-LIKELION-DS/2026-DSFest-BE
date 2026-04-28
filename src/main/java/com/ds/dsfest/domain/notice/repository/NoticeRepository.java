@@ -20,7 +20,7 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
       "SELECT n FROM Notice n WHERE n.title LIKE %:keyword% OR n.content LIKE %:keyword% ORDER BY n.createdAt DESC")
   List<Notice> searchByKeyword(@Param("keyword") String keyword);
 
-  List<Notice> findTop4ByOrderByViewCountDesc();
+  List<Notice> findTop4ByOrderByViewCountDescCreatedAtDesc();
 
   @Modifying(clearAutomatically = true)
   @Query("UPDATE Notice n SET n.viewCount = n.viewCount + 1 WHERE n.id = :id")

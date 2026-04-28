@@ -155,7 +155,7 @@ class NoticeServiceTest {
   void searchNotices_empty_returnsRecommended() {
     Notice recommended = Notice.create("자주 찾는 공지", "내용", NoticeCategory.ETC, false);
     when(noticeRepository.searchByKeyword("없는키워드")).thenReturn(List.of());
-    when(noticeRepository.findTop4ByOrderByViewCountDesc()).thenReturn(List.of(recommended));
+    when(noticeRepository.findTop4ByOrderByViewCountDescCreatedAtDesc()).thenReturn(List.of(recommended));
 
     NoticeSearchResDto result = noticeService.searchNotices("없는키워드");
 
@@ -174,7 +174,7 @@ class NoticeServiceTest {
 
     assertThat(result.results()).hasSize(1);
     assertThat(result.recommended()).isEmpty();
-    verify(noticeRepository, never()).findTop4ByOrderByViewCountDesc();
+    verify(noticeRepository, never()).findTop4ByOrderByViewCountDescCreatedAtDesc();
   }
 
   @Test
