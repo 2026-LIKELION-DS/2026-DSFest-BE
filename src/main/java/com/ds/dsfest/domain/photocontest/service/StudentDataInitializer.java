@@ -75,11 +75,28 @@ public class StudentDataInitializer implements ApplicationRunner {
         }
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+            String header = br.readLine();
             String line;
+
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data.length >= 2) {
-                    String hash = IdentityHasher.hashIdentity(data[0].trim(), data[1].trim(), status);
+
+                if (data.length < 2) continue; // 데이터가 비어있거나 너무 짧은 줄은 무시 (에러 방어)
+
+                String hash = null;
+
+                /**
+                 * 재학생/휴학생 여부에 따라 인덱스 다르게 읽어옴.
+                 */
+                if (status.equals("재학생")) {
+                    hash = IdentityHasher.hashIdentity(data[0].trim(), data[1].trim(), status); // 재학생: data[0]=학번, data[1]=이름
+                } else if (status.equals("휴학생")) {
+                    if (data.length >= 3) {
+                        hash = IdentityHasher.hashIdentity(data[1].trim(), data[2].trim(), status); // 휴학생: data[1]=학번, data[2]=이름
+                    }
+                }
+
+                if (hash != null) {
                     list.add(new VerifiedStudent(hash));
                 }
             }
