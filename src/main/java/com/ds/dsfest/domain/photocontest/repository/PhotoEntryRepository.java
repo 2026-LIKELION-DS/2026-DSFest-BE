@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface PhotoEntryRepository extends JpaRepository<PhotoEntry, Long> {
     /**
-     * 모든 출품작을 생성 순으로 조회합니다.
+     * 모든 출품작을 ID 순으로 조회합니다.
      */
-    List<PhotoEntry> findAllByOrderByCreatedAtDesc();
+    List<PhotoEntry> findAllByOrderByIdAsc();
 }

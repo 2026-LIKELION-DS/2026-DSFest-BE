@@ -81,7 +81,7 @@ public class PhotoContestService {
      * 사진 콘테스트 출품작 목록을 주제별로 분류하여 전체 조회합니다.
      */
     public PhotoListResDto getPhotoList() {
-        List<PhotoEntry> allPhotos = photoEntryRepository.findAllByOrderByCreatedAtDesc();
+        List<PhotoEntry> allPhotos = photoEntryRepository.findAllByOrderByIdAsc();
 
         List<PhotoListResDto.PhotoSummaryDto> youthPhotos = allPhotos.stream()
             .filter(photo -> photo.getTheme() == PhotoTheme.YOUTH)
