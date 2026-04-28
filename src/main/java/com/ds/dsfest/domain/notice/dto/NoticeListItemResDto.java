@@ -6,7 +6,7 @@ import com.ds.dsfest.domain.notice.constant.NoticeCategory;
 import com.ds.dsfest.domain.notice.entity.Notice;
 
 public record NoticeListItemResDto(
-    Long id, String title, NoticeCategory category, boolean urgent, LocalDateTime createdAt) {
+    Long id, String title, NoticeCategory category, boolean urgent, LocalDateTime createdAt, int viewCount) {
 
   public static NoticeListItemResDto from(Notice notice) {
     return new NoticeListItemResDto(
@@ -14,6 +14,8 @@ public record NoticeListItemResDto(
         notice.getTitle(),
         notice.getCategory(),
         notice.isUrgent(),
-        notice.getCreatedAt());
+        notice.getCreatedAt(),
+        notice.getViewCount()
+    );
   }
 }

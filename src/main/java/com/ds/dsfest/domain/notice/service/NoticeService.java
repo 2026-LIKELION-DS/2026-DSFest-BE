@@ -99,7 +99,7 @@ public class NoticeService {
 
     List<NoticeListItemResDto> recommended =
         results.isEmpty()
-            ? noticeRepository.findTop3ByOrderByViewCountDesc().stream()
+            ? noticeRepository.findTop4ByOrderByViewCountDescCreatedAtDesc().stream()
                 .map(NoticeListItemResDto::from)
                 .toList()
             : List.of();
@@ -153,5 +153,12 @@ public class NoticeService {
     return noticeRepository
         .findById(noticeId)
         .orElseThrow(() -> new CustomException(NoticeErrorCode.NOTICE_NOT_FOUND));
+  }
+
+   @Transactional(readOnly = true)
+   public List<NoticeListItemResDto> getFrequentNoticeList() {
+      return noticeRepository.findTop4ByOrderByViewCountDescCreatedAtDesc().stream()
+          .map(NoticeListItemResDto::from)
+          .toList();
   }
 }

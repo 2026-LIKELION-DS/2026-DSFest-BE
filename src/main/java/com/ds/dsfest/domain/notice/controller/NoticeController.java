@@ -42,7 +42,7 @@ public class NoticeController implements NoticeControllerDocs {
   @GetMapping("/{noticeId}")
   @Override
   public ResponseEntity<ApiResponse<NoticeDetailResDto>> getNoticeDetail(@PathVariable Long noticeId) {
-      return ResponseEntity.ok(ApiResponse.onSuccess(noticeService.getNoticeDetail(noticeId)));
+      return ResponseEntity.ok(ApiResponse.onSuccess(noticeService.getNoticeDetailWithViewCount(noticeId)));
   }
 
   @GetMapping("/urgent")
@@ -54,5 +54,11 @@ public class NoticeController implements NoticeControllerDocs {
   public ResponseEntity<ApiResponse<NoticeSearchResDto>> searchNotices(
       @RequestParam String keyword) {
     return ResponseEntity.ok(ApiResponse.onSuccess(noticeService.searchNotices(keyword)));
+  }
+
+  @GetMapping("/frequent")
+  @Override
+  public ResponseEntity<ApiResponse<List<NoticeListItemResDto>>> getFrequentNotices() {
+      return ResponseEntity.ok(ApiResponse.onSuccess(noticeService.getFrequentNoticeList()));
   }
 }

@@ -14,7 +14,8 @@ public record NoticeDetailResDto(
     String content,
     List<String> imageUrls,
     LocalDateTime createdAt,
-    LocalDateTime updatedAt) {
+    LocalDateTime updatedAt,
+    int viewCount) {
 
   public static NoticeDetailResDto from(Notice notice) {
     List<String> imageUrls = notice.getImages().stream().map(image -> image.getImageUrl()).toList();
@@ -26,6 +27,8 @@ public record NoticeDetailResDto(
         notice.getContent(),
         imageUrls,
         notice.getCreatedAt(),
-        notice.getUpdatedAt());
+        notice.getUpdatedAt(),
+        notice.getViewCount()
+    );
   }
 }
