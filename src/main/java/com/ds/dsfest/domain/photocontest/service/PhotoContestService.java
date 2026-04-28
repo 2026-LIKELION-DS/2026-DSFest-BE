@@ -5,15 +5,14 @@ import com.ds.dsfest.domain.photocontest.constant.PhotoTheme;
 import com.ds.dsfest.domain.photocontest.dto.*;
 import com.ds.dsfest.domain.photocontest.entity.PhotoContestSetting;
 import com.ds.dsfest.domain.photocontest.entity.PhotoEntry;
+import com.ds.dsfest.domain.photocontest.entity.PhotoParticipation;
 import com.ds.dsfest.domain.photocontest.entity.PhotoVote;
-import com.ds.dsfest.domain.photocontest.repository.PhotoContestSettingRepository;
-import com.ds.dsfest.domain.photocontest.repository.PhotoEntryRepository;
-import com.ds.dsfest.domain.photocontest.repository.PhotoVoteRepository;
-import com.ds.dsfest.domain.photocontest.repository.VerifiedStudentRepository;
+import com.ds.dsfest.domain.photocontest.repository.*;
 import com.ds.dsfest.global.exception.CustomException;
 import com.ds.dsfest.global.exception.GlobalErrorCode;
 import com.ds.dsfest.global.util.IdentityHasher;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +30,7 @@ public class PhotoContestService {
     private final PhotoEntryRepository photoEntryRepository;
     private final PhotoVoteRepository photoVoteRepository;
     private final VerifiedStudentRepository verifiedStudentRepository;
+    private final PhotoParticipationRepository photoParticipationRepository;
 
     /**
      * 사진 콘테스트의 현재 상태 및 마감 시간을 반환합니다.
@@ -81,7 +81,7 @@ public class PhotoContestService {
      * 사진 콘테스트 출품작 목록을 주제별로 분류하여 전체 조회합니다.
      */
     public PhotoListResDto getPhotoList() {
-        List<PhotoEntry> allPhotos = photoEntryRepository.findAllByOrderByCreatedAtDesc();
+        List<PhotoEntry> allPhotos = photoEntryRepository.findAllByOrderByIdAsc();
 
         List<PhotoListResDto.PhotoSummaryDto> youthPhotos = allPhotos.stream()
             .filter(photo -> photo.getTheme() == PhotoTheme.YOUTH)
@@ -142,6 +142,16 @@ public class PhotoContestService {
         long themeCount = selectedPhotos.stream().map(PhotoEntry::getTheme).distinct().count();
         if (themeCount != 3) {
             throw new CustomException(GlobalErrorCode.BAD_REQUEST);
+        }
+
+        /**
+         * 동시성 이슈 방어
+         */
+        try {
+            photoParticipationRepository.save(new PhotoParticipation(voterKey));
+            photoParticipationRepository.flush(); // 즉시 DB에 쏴서 충돌 여부 확인
+        } catch (DataIntegrityViolationException e) {
+            throw new CustomException(GlobalErrorCode.BAD_REQUEST); // 늦게 들어온 요청은 여기서 튕김!
         }
 
         /**

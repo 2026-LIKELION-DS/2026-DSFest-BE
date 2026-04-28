@@ -20,7 +20,7 @@ public class PhotoVote extends BaseEntity {
   @JoinColumn(name = "photo_entry_id", nullable = false)
   private PhotoEntry photoEntry;
 
-  @Column(nullable = false, length = 64, unique = true)
+  @Column(nullable = false, length = 64)
   private String voterKey;
 
   public PhotoVote(PhotoEntry photoEntry, String voterKey) {
