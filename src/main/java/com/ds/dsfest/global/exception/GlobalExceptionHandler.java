@@ -1,20 +1,17 @@
 package com.ds.dsfest.global.exception;
 
-import java.util.stream.Collectors;
-
+import com.ds.dsfest.global.response.ApiResponse;
 import jakarta.validation.ConstraintViolationException;
-
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-
-import com.ds.dsfest.global.response.ApiResponse;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestControllerAdvice
@@ -56,6 +53,16 @@ public class GlobalExceptionHandler {
     log.warn("ConstraintViolationException: {}", errorMessage);
     return ResponseEntity.status(GlobalErrorCode.INVALID_INPUT.getStatus())
         .body(ApiResponse.onFailure(GlobalErrorCode.INVALID_INPUT, errorMessage));
+  }
+  /**
+   * enum 변환 등 parameter 타입 변환 실패시
+   * (ex. category=UNKNOWN 처럼 enum 바인딩 실패)
+   */
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ResponseEntity<ApiResponse<Void>> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+      log.warn("MethodArgumentTypeMismatchException: {}", e.getMessage());
+      return ResponseEntity.status(GlobalErrorCode.INVALID_INPUT.getStatus())
+          .body(ApiResponse.onFailure(GlobalErrorCode.INVALID_INPUT));
   }
 
   /** 존재하지 않는 경로 (favicon.ico 등 브라우저 기본 요청 포함) */

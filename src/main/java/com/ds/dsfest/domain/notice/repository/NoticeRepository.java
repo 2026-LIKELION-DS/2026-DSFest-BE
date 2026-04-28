@@ -1,18 +1,18 @@
 package com.ds.dsfest.domain.notice.repository;
 
+import com.ds.dsfest.domain.notice.constant.NoticeCategory;
+import com.ds.dsfest.domain.notice.entity.Notice;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.ds.dsfest.domain.notice.entity.Notice;
-
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
   List<Notice> findAllByOrderByCreatedAtDesc();
+  List<Notice> findAllByCategoryOrderByCreatedAtDesc(NoticeCategory category);
 
   Optional<Notice> findTopByUrgentTrueOrderByCreatedAtDesc();
 

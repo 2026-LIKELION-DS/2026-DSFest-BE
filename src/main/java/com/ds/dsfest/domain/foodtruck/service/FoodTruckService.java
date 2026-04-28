@@ -1,13 +1,14 @@
 package com.ds.dsfest.domain.foodtruck.service;
 
 import com.ds.dsfest.domain.booth.exception.BoothErrorCode;
+import com.ds.dsfest.domain.foodtruck.dto.FoodTruckDetailResDto;
 import com.ds.dsfest.domain.foodtruck.dto.FoodTruckLikeResDto;
 import com.ds.dsfest.domain.foodtruck.dto.FoodTruckListResDto;
-import com.ds.dsfest.domain.foodtruck.entity.FoodTruck;
-import com.ds.dsfest.domain.foodtruck.entity.FoodTruckLike;
-import com.ds.dsfest.domain.foodtruck.entity.FoodTruckOperatingDay;
+import com.ds.dsfest.domain.foodtruck.dto.FoodTruckMenuResDto;
+import com.ds.dsfest.domain.foodtruck.entity.*;
 import com.ds.dsfest.domain.foodtruck.mapper.FoodTruckMapper;
 import com.ds.dsfest.domain.foodtruck.repository.FoodTruckLikeRepository;
+import com.ds.dsfest.domain.foodtruck.repository.FoodTruckMenuRepository;
 import com.ds.dsfest.domain.foodtruck.repository.FoodTruckRepository;
 import com.ds.dsfest.domain.user.entity.GuestUser;
 import com.ds.dsfest.domain.user.exception.UserErrorCode;
@@ -42,6 +43,7 @@ public class FoodTruckService {
     private final GuestUserRepository guestUserRepository;
     private final FoodTruckMapper foodTruckMapper;
     private final Clock clock;
+    private final FoodTruckMenuRepository foodTruckMenuRepository;
 
     @Value("${festival.start-date}")
     private String festivalStartDateStr;
@@ -51,8 +53,17 @@ public class FoodTruckService {
      *
      * @return 좋아요 개수가 포함된 푸드트럭 리스트 DTO 목록
      */
-    public List<FoodTruckListResDto> getFoodTruckList() {
+    public List<FoodTruckListResDto> getFoodTruckList(boolean isVegan) {
         List<FoodTruck> foodTrucks = foodTruckRepository.findAllWithOperatingDays();
+
+        /**
+         * isVegan == ture 인 트럭만 조회
+         */
+        if (isVegan) {
+            foodTrucks = foodTrucks.stream()
+                .filter(truck -> truck.getMenus().stream().anyMatch(FoodTruckMenu::isVegan))
+                .collect(Collectors.toList());
+        }
 
         LocalDateTime now = LocalDateTime.now(clock);
         LocalDate today = now.toLocalDate();
@@ -88,7 +99,10 @@ public class FoodTruckService {
 
                 int likeCount = Math.toIntExact(foodTruckLikeRepository.countByFoodTruck(truck)); // 해당 트럭의 좋아요 개수 조회
 
-                return foodTruckMapper.toFoodTruckListResDto(truck, operatingDaysString, likeCount, isOpen);
+                String thumbnailUrl = truck.getFoodTruckImages().isEmpty() ?
+                    "" : truck.getFoodTruckImages().get(0).getImageUrl();
+
+                return foodTruckMapper.toFoodTruckListResDto(truck, thumbnailUrl, operatingDaysString, likeCount, isOpen);
             })
             .collect(Collectors.toList());
 
@@ -162,5 +176,67 @@ public class FoodTruckService {
             return festivalDay;
         }
         return -1;
+    }
+
+    /**
+     * 특정 푸드트럭의 상세 정보를 조회합니다.
+     * @return 푸드트럭 상세 정보 DTO
+     */
+    public FoodTruckDetailResDto getFoodTruckDetail(Long foodTruckId, UUID guestUuid) {
+
+        FoodTruck truck = foodTruckRepository.findById(foodTruckId)
+            .orElseThrow(() -> new CustomException(BoothErrorCode.BOOTH_NOT_FOUND));
+
+        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDate today = now.toLocalDate();
+        int currentFestivalDay = getFestivalDayFromDate(today);
+
+        String operatingString = "운영 정보 없음";
+        Optional<FoodTruckOperatingDay> todaySchedule = truck.getOperatingDays().stream()
+            .filter(schedule -> schedule.getFestivalDay() == currentFestivalDay)
+            .findFirst();
+
+        if (todaySchedule.isPresent()) {
+            LocalTime start = todaySchedule.get().getStartTime();
+            LocalTime end = todaySchedule.get().getEndTime();
+            String dayOfWeek = today.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.KOREAN);
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+            operatingString = String.format("%d일(%s) %s - %s",
+                today.getDayOfMonth(), dayOfWeek, start.format(timeFormatter), end.format(timeFormatter));
+        }
+
+        List<FoodTruckMenuResDto> menuList = foodTruckMenuRepository.findByFoodTruck(truck)
+            .stream()
+            .map(menu -> new FoodTruckMenuResDto(
+                menu.getMenuName(),
+                menu.getPrice(),
+                menu.isVegan()
+            ))
+            .collect(Collectors.toList());
+
+        int likeCount = Math.toIntExact(foodTruckLikeRepository.countByFoodTruck(truck));
+
+        boolean isLiked = false;
+        if (guestUuid != null) {
+            Optional<GuestUser> guestUser = guestUserRepository.findById(guestUuid);
+            if (guestUser.isPresent()) {
+                isLiked = foodTruckLikeRepository.findByGuestUserAndFoodTruck(guestUser.get(), truck).isPresent();
+            }
+        }
+
+        List<String> images = truck.getFoodTruckImages().stream()
+            .map(FoodTruckImage::getImageUrl)
+            .collect(Collectors.toList());
+
+        return new FoodTruckDetailResDto(
+            truck.getId(),
+            images,
+            truck.getName(),
+            truck.getDescription(),
+            operatingString,
+            menuList,
+            likeCount,
+            isLiked
+        );
     }
 }

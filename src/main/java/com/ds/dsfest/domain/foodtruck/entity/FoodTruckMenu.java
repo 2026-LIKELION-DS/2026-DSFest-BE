@@ -33,4 +33,7 @@ public class FoodTruckMenu {
 
   @Column(nullable = false)
   private int price;
+
+  @Column(nullable = false, columnDefinition = "boolean default false")
+  private boolean isVegan;
 }
