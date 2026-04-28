@@ -107,7 +107,7 @@ public class PhotoContestService {
     @Transactional
     public void votePhotos(PhotoVoteReqDto reqDto) {
         String currentHash = IdentityHasher.hashIdentity(reqDto.studentId(), reqDto.studentName(), "재학생"); // 재학생 해시
-        String leaveHash = IdentityHasher.hashIdentity("학사", reqDto.studentId(), "휴학생"); // 휴학생 해시
+        String leaveHash = IdentityHasher.hashIdentity(reqDto.studentId(), reqDto.studentName(), "휴학생"); // 휴학생 해시
 
         String voterKey = null;
 
