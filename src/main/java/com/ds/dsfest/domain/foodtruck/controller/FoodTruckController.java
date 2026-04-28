@@ -38,7 +38,7 @@ public class FoodTruckController implements FoodTruckControllerDocs {
     @Override
     public ResponseEntity<ApiResponse<FoodTruckLikeResDto>> toggleFoodTruckLike(
         @PathVariable Long foodTruckId,
-        @RequestHeader("guest_uuid") UUID guestUuid
+        @RequestHeader("guest-uuid") UUID guestUuid
     ) {
         FoodTruckLikeResDto result = foodTruckService.toggleFoodTruckLike(foodTruckId, guestUuid);
         return ResponseEntity.ok(ApiResponse.onSuccess(result));
@@ -51,7 +51,7 @@ public class FoodTruckController implements FoodTruckControllerDocs {
     @Override
     public ResponseEntity<ApiResponse<FoodTruckDetailResDto>> getFoodTruckDetail(
         @PathVariable Long foodTruckId,
-        @RequestHeader(value = "guest_uuid", required = false) UUID guestUuid
+        @RequestHeader(value = "guest-uuid", required = false) UUID guestUuid
     ) {
         FoodTruckDetailResDto result = foodTruckService.getFoodTruckDetail(foodTruckId, guestUuid);
         return ResponseEntity.ok(ApiResponse.onSuccess(result));

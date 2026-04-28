@@ -35,19 +35,19 @@ public interface FoodTruckControllerDocs {
      * 푸드트럭 맛있어요 토글 API
      */
     @Operation(summary = "푸드트럭 맛있어요 토글", description = "좋아요가 없으면 생성(isLiked: true), 이미 존재하면 삭제(isLiked: false)됩니다.")
-    @Parameter(name = "guest_uuid", description = "비회원 식별용 UUID (커스텀 헤더)", required = true, in = ParameterIn.HEADER)
+    @Parameter(name = "guest-uuid", description = "비회원 식별용 UUID (커스텀 헤더)", required = true, in = ParameterIn.HEADER)
     ResponseEntity<ApiResponse<FoodTruckLikeResDto>> toggleFoodTruckLike(
         @PathVariable Long foodTruckId,
-        @RequestHeader("guest_uuid") UUID guestUuid
+        @RequestHeader("guest-uuid") UUID guestUuid
     );
 
     /**
      * 푸드트럭 상세 조회 API
      */
     @Operation(summary = "푸드트럭 상세 조회", description = "특정 푸드트럭의 메뉴, 이미지 목록, 운영 시간 및 좋아요 여부 등 상세 정보를 조회합니다.")
-    @Parameter(name = "guest_uuid", description = "비회원 식별용 UUID (현재 사용자의 좋아요 여부 판별용. 필수는 아님)", required = false, in = ParameterIn.HEADER)
+    @Parameter(name = "guest-uuid", description = "비회원 식별용 UUID (현재 사용자의 좋아요 여부 판별용. 필수는 아님)", required = false, in = ParameterIn.HEADER)
     ResponseEntity<ApiResponse<FoodTruckDetailResDto>> getFoodTruckDetail(
         @Parameter(description = "조회할 푸드트럭의 고유 ID", required = true) @PathVariable Long foodTruckId,
-        @RequestHeader(value = "guest_uuid", required = false) UUID guestUuid
+        @RequestHeader(value = "guest-uuid", required = false) UUID guestUuid
     );
 }
