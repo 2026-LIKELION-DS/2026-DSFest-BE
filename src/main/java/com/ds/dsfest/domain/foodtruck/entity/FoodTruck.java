@@ -1,13 +1,15 @@
 package com.ds.dsfest.domain.foodtruck.entity;
 
-import com.ds.dsfest.global.common.BaseEntity;
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.*;
+
+import com.ds.dsfest.global.common.BaseEntity;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 
 import com.ds.dsfest.domain.booth.constant.BoothType;
 import com.ds.dsfest.global.common.BaseEntity;
@@ -23,12 +22,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(
-    name = "booth_map_positions",
-    uniqueConstraints =
-        @UniqueConstraint(
-            name = "uk_booth_map_day_type_pos",
-            columnNames = {"festival_day", "day_night_type", "position_number"}))
+@Table(name = "booth_map_positions")
 public class BoothMapPosition extends BaseEntity {
 
   @Id

@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,11 +15,11 @@ import lombok.NoArgsConstructor;
 @Table(name = "verified_students")
 public class VerifiedStudent {
 
-    @Id
-    @Column(name = "hashed_identity", length = 64)
-    private String hashedIdentity; // SHA-256 해시값 (64자)
+  @Id
+  @Column(name = "hashed_identity", length = 64)
+  private String hashedIdentity; // SHA-256 해시값 (64자)
 
-    public VerifiedStudent(String hashedIdentity) {
-        this.hashedIdentity = hashedIdentity;
-    }
+  public VerifiedStudent(String hashedIdentity) {
+    this.hashedIdentity = hashedIdentity;
+  }
 }

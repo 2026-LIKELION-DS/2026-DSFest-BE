@@ -1,9 +1,11 @@
 package com.ds.dsfest.domain.artist.repository;
 
-import com.ds.dsfest.domain.artist.entity.Artist;
 import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.ds.dsfest.domain.artist.entity.Artist;
 
 public interface ArtistRepository extends JpaRepository<Artist, Long> {
 

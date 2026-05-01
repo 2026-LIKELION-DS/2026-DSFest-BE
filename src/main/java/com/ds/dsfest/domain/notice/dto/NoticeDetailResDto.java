@@ -28,7 +28,6 @@ public record NoticeDetailResDto(
         imageUrls,
         notice.getCreatedAt(),
         notice.getUpdatedAt(),
-        notice.getViewCount()
-    );
+        notice.getViewCount());
   }
 }
