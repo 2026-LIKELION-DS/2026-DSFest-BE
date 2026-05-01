@@ -24,11 +24,15 @@ public record BoothDetailResDto(
     String name,
     Set<BoothType> boothTypes,
     String operatingSubject,
+    String affiliation,
     String description,
     String openKakaoUrl,
     String everytimeUrl,
     String instagramUrl,
+    String collabInstagramUrl,
+    String youtubeUrl,
     List<String> tags,
+    List<String> categories,
     List<String> imageUrls,
     List<String> operatingDays,
     List<String> positions) {
@@ -53,8 +57,12 @@ public record BoothDetailResDto(
             .map(BoothImage::getImageUrl)
             .toList();
 
-    List<String> operatingDays = formatOperatingDays(booth.getOperatingDays(), festivalStartDate);
+    List<String> operatingDays =
+        booth.getOperatingDaysText() != null && !booth.getOperatingDaysText().isBlank()
+            ? List.of(booth.getOperatingDaysText())
+            : formatOperatingDays(booth.getOperatingDays(), festivalStartDate);
     List<String> positions = formatPositions(positionEntities);
+    List<String> categories = List.copyOf(booth.getCategories());
 
     Set<BoothType> boothTypes =
         booth.getBoothTypes().isEmpty()
@@ -67,11 +75,15 @@ public record BoothDetailResDto(
         booth.getName(),
         boothTypes,
         booth.getOperatingSubject(),
+        booth.getAffiliation(),
         booth.getDescription(),
         booth.getOpenKakaoUrl(),
         booth.getEverytimeUrl(),
         booth.getInstagramUrl(),
+        booth.getCollabInstagramUrl(),
+        booth.getYoutubeUrl(),
         tags,
+        categories,
         imageUrls,
         operatingDays,
         positions);

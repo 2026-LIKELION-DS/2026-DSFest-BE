@@ -1,5 +1,20 @@
 package com.ds.dsfest.domain.foodtruck.service;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ds.dsfest.domain.booth.exception.BoothErrorCode;
 import com.ds.dsfest.domain.foodtruck.dto.FoodTruckDetailResDto;
 import com.ds.dsfest.domain.foodtruck.dto.FoodTruckLikeResDto;
@@ -14,229 +29,227 @@ import com.ds.dsfest.domain.user.entity.GuestUser;
 import com.ds.dsfest.domain.user.exception.UserErrorCode;
 import com.ds.dsfest.domain.user.repository.GuestUserRepository;
 import com.ds.dsfest.global.exception.CustomException;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.stream.Collectors;
-
-/**
- * 푸드트럭 관련 비즈니스 로직을 처리하는 서비스 클래스입니다.
- */
+/** 푸드트럭 관련 비즈니스 로직을 처리하는 서비스 클래스입니다. */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class FoodTruckService {
 
-    private final FoodTruckRepository foodTruckRepository;
-    private final FoodTruckLikeRepository foodTruckLikeRepository;
-    private final GuestUserRepository guestUserRepository;
-    private final FoodTruckMapper foodTruckMapper;
-    private final Clock clock;
-    private final FoodTruckMenuRepository foodTruckMenuRepository;
+  private final FoodTruckRepository foodTruckRepository;
+  private final FoodTruckLikeRepository foodTruckLikeRepository;
+  private final GuestUserRepository guestUserRepository;
+  private final FoodTruckMapper foodTruckMapper;
+  private final Clock clock;
+  private final FoodTruckMenuRepository foodTruckMenuRepository;
 
-    @Value("${festival.start-date}")
-    private String festivalStartDateStr;
+  @Value("${festival.start-date}")
+  private String festivalStartDateStr;
 
-    /**
-     * 푸드트럭 목록을 조회하며, 실제 DB에 저장된 좋아요 개수를 합산하여 반환합니다.
-     *
-     * @return 좋아요 개수가 포함된 푸드트럭 리스트 DTO 목록
-     */
-    public List<FoodTruckListResDto> getFoodTruckList(boolean isVegan) {
-        List<FoodTruck> foodTrucks = foodTruckRepository.findAllWithOperatingDays();
+  /**
+   * 푸드트럭 목록을 조회하며, 실제 DB에 저장된 좋아요 개수를 합산하여 반환합니다.
+   *
+   * @return 좋아요 개수가 포함된 푸드트럭 리스트 DTO 목록
+   */
+  public List<FoodTruckListResDto> getFoodTruckList(boolean isVegan) {
+    List<FoodTruck> foodTrucks = foodTruckRepository.findAllWithOperatingDays();
 
-        /**
-         * isVegan == ture 인 트럭만 조회
-         */
-        if (isVegan) {
-            foodTrucks = foodTrucks.stream()
-                .filter(truck -> truck.getMenus().stream().anyMatch(FoodTruckMenu::isVegan))
-                .collect(Collectors.toList());
-        }
+    /** isVegan == ture 인 트럭만 조회 */
+    if (isVegan) {
+      foodTrucks =
+          foodTrucks.stream()
+              .filter(truck -> truck.getMenus().stream().anyMatch(FoodTruckMenu::isVegan))
+              .collect(Collectors.toList());
+    }
 
-        LocalDateTime now = LocalDateTime.now(clock);
-        LocalDate today = now.toLocalDate();
-        LocalTime currentTime = now.toLocalTime();
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+    LocalDateTime now = LocalDateTime.now(clock);
+    LocalDate today = now.toLocalDate();
+    LocalTime currentTime = now.toLocalTime();
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-        int currentFestivalDay = getFestivalDayFromDate(today);
+    int currentFestivalDay = getFestivalDayFromDate(today);
 
-        List<FoodTruckListResDto> resultList = foodTrucks.stream()
-            .map(truck -> {
-                Optional<FoodTruckOperatingDay> todaySchedule = truck.getOperatingDays().stream()
-                    .filter(schedule -> schedule.getFestivalDay() == currentFestivalDay)
-                    .findFirst();
+    List<FoodTruckListResDto> resultList =
+        foodTrucks.stream()
+            .map(
+                truck -> {
+                  Optional<FoodTruckOperatingDay> todaySchedule =
+                      truck.getOperatingDays().stream()
+                          .filter(schedule -> schedule.getFestivalDay() == currentFestivalDay)
+                          .findFirst();
 
-                boolean isOpen = false;
-                String operatingDaysString = "운영 정보 없음";
+                  boolean isOpen = false;
+                  String operatingDaysString = "운영 정보 없음";
 
-                if (todaySchedule.isPresent()) {
+                  if (todaySchedule.isPresent()) {
                     FoodTruckOperatingDay schedule = todaySchedule.get();
                     LocalTime start = schedule.getStartTime();
                     LocalTime end = schedule.getEndTime();
 
-                    String dayOfWeek = today.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.KOREAN);
-                    operatingDaysString = String.format("%d일(%s) %s - %s",
-                        today.getDayOfMonth(),
-                        dayOfWeek,
-                        start.format(timeFormatter),
-                        end.format(timeFormatter));
+                    String dayOfWeek =
+                        today.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.KOREAN);
+                    operatingDaysString =
+                        String.format(
+                            "%d일(%s) %s - %s",
+                            today.getDayOfMonth(),
+                            dayOfWeek,
+                            start.format(timeFormatter),
+                            end.format(timeFormatter));
 
                     isOpen = !currentTime.isBefore(start) && currentTime.isBefore(end);
-                }
+                  }
 
+                  int likeCount =
+                      Math.toIntExact(
+                          foodTruckLikeRepository.countByFoodTruck(truck)); // 해당 트럭의 좋아요 개수 조회
 
-                int likeCount = Math.toIntExact(foodTruckLikeRepository.countByFoodTruck(truck)); // 해당 트럭의 좋아요 개수 조회
+                  String thumbnailUrl =
+                      truck.getFoodTruckImages().isEmpty()
+                          ? ""
+                          : truck.getFoodTruckImages().get(0).getImageUrl();
 
-                String thumbnailUrl = truck.getFoodTruckImages().isEmpty() ?
-                    "" : truck.getFoodTruckImages().get(0).getImageUrl();
-
-                return foodTruckMapper.toFoodTruckListResDto(truck, thumbnailUrl, operatingDaysString, likeCount, isOpen);
-            })
+                  return foodTruckMapper.toFoodTruckListResDto(
+                      truck, thumbnailUrl, operatingDaysString, likeCount, isOpen);
+                })
             .collect(Collectors.toList());
 
-        Collections.shuffle(resultList);
+    Collections.shuffle(resultList);
 
-        return resultList;
-    }
+    return resultList;
+  }
 
-    /**
-     * 특정 푸드트럭에 대한 좋아요 상태를 토글합니다.
-     *
-     * @return 좋아요 후의 최종 상태 (true: 추가됨, false: 취소됨)
-     */
-    @Transactional
-    public FoodTruckLikeResDto toggleFoodTruckLike(Long foodTruckId, UUID guestUuid) {
-        /**
-         * 1. 푸드트럭 존재 여부 확인
-         */
-        FoodTruck foodTruck = foodTruckRepository.findById(foodTruckId)
+  /**
+   * 특정 푸드트럭에 대한 좋아요 상태를 토글합니다.
+   *
+   * @return 좋아요 후의 최종 상태 (true: 추가됨, false: 취소됨)
+   */
+  @Transactional
+  public FoodTruckLikeResDto toggleFoodTruckLike(Long foodTruckId, UUID guestUuid) {
+    /** 1. 푸드트럭 존재 여부 확인 */
+    FoodTruck foodTruck =
+        foodTruckRepository
+            .findById(foodTruckId)
             .orElseThrow(() -> new CustomException(BoothErrorCode.BOOTH_NOT_FOUND));
 
-        /**
-         * 2. 사용자(GuestUser) 존재 여부 확인
-         */
-        GuestUser guestUser = guestUserRepository.findById(guestUuid)
+    /** 2. 사용자(GuestUser) 존재 여부 확인 */
+    GuestUser guestUser =
+        guestUserRepository
+            .findById(guestUuid)
             .orElseThrow(() -> new CustomException(UserErrorCode.GUEST_NOT_FOUND));
 
-        /**
-         * 3. 좋아요 토글 로직
-         */
-        Optional<FoodTruckLike> existingLike = foodTruckLikeRepository.findByGuestUserAndFoodTruck(guestUser, foodTruck);
+    /** 3. 좋아요 토글 로직 */
+    Optional<FoodTruckLike> existingLike =
+        foodTruckLikeRepository.findByGuestUserAndFoodTruck(guestUser, foodTruck);
 
-        if (existingLike.isPresent()) {
-            foodTruckLikeRepository.delete(existingLike.get());
-            return new FoodTruckLikeResDto(false);
-        } else {
-            try {
-                FoodTruckLike newLike = FoodTruckLike.builder()
-                    .guestUser(guestUser)
-                    .foodTruck(foodTruck)
-                    .build();
-                foodTruckLikeRepository.save(newLike);
-                return new FoodTruckLikeResDto(true);
+    if (existingLike.isPresent()) {
+      foodTruckLikeRepository.delete(existingLike.get());
+      return new FoodTruckLikeResDto(false);
+    } else {
+      try {
+        FoodTruckLike newLike =
+            FoodTruckLike.builder().guestUser(guestUser).foodTruck(foodTruck).build();
+        foodTruckLikeRepository.save(newLike);
+        return new FoodTruckLikeResDto(true);
 
-            } catch (DataIntegrityViolationException e) {
-                /**
-                 * 동시에 여러 번 눌러서 Unique 제약조건 충돌(500)이 발생한 경우
-                 */
-                FoodTruckLike concurrentLike = foodTruckLikeRepository
-                    .findByGuestUserAndFoodTruck(guestUser, foodTruck)
-                    .orElseThrow(() -> e); // 만약 못 찾는다면 원래의 에러를 던집니다.
+      } catch (DataIntegrityViolationException e) {
+        /** 동시에 여러 번 눌러서 Unique 제약조건 충돌(500)이 발생한 경우 */
+        FoodTruckLike concurrentLike =
+            foodTruckLikeRepository
+                .findByGuestUserAndFoodTruck(guestUser, foodTruck)
+                .orElseThrow(() -> e); // 만약 못 찾는다면 원래의 에러를 던집니다.
 
-                foodTruckLikeRepository.delete(concurrentLike);
-                return new FoodTruckLikeResDto(false);
-            }
-        }
+        foodTruckLikeRepository.delete(concurrentLike);
+        return new FoodTruckLikeResDto(false);
+      }
     }
+  }
 
-    /**
-     * 날짜를 기반으로 축제 일차를 계산합니다.
-     *
-     * @param date 기준 날짜
-     * @return 축제 일차 (1~3), 기간 외일 경우 -1
-     */
-    private int getFestivalDayFromDate(LocalDate date) {
-        LocalDate startDate = LocalDate.parse(festivalStartDateStr);
-        long diff = ChronoUnit.DAYS.between(startDate, date);
-        int festivalDay = (int) diff + 1;
+  /**
+   * 날짜를 기반으로 축제 일차를 계산합니다.
+   *
+   * @param date 기준 날짜
+   * @return 축제 일차 (1~3), 기간 외일 경우 -1
+   */
+  private int getFestivalDayFromDate(LocalDate date) {
+    LocalDate startDate = LocalDate.parse(festivalStartDateStr);
+    long diff = ChronoUnit.DAYS.between(startDate, date);
+    int festivalDay = (int) diff + 1;
 
-        if (festivalDay >= 1 && festivalDay <= 3) {
-            return festivalDay;
-        }
-        return -1;
+    if (festivalDay >= 1 && festivalDay <= 3) {
+      return festivalDay;
     }
+    return -1;
+  }
 
-    /**
-     * 특정 푸드트럭의 상세 정보를 조회합니다.
-     * @return 푸드트럭 상세 정보 DTO
-     */
-    public FoodTruckDetailResDto getFoodTruckDetail(Long foodTruckId, UUID guestUuid) {
+  /**
+   * 특정 푸드트럭의 상세 정보를 조회합니다.
+   *
+   * @return 푸드트럭 상세 정보 DTO
+   */
+  public FoodTruckDetailResDto getFoodTruckDetail(Long foodTruckId, UUID guestUuid) {
 
-        FoodTruck truck = foodTruckRepository.findById(foodTruckId)
+    FoodTruck truck =
+        foodTruckRepository
+            .findById(foodTruckId)
             .orElseThrow(() -> new CustomException(BoothErrorCode.BOOTH_NOT_FOUND));
 
-        LocalDateTime now = LocalDateTime.now(clock);
-        LocalDate today = now.toLocalDate();
-        int currentFestivalDay = getFestivalDayFromDate(today);
+    LocalDateTime now = LocalDateTime.now(clock);
+    LocalDate today = now.toLocalDate();
+    int currentFestivalDay = getFestivalDayFromDate(today);
 
-        String operatingString = "운영 정보 없음";
-        Optional<FoodTruckOperatingDay> todaySchedule = truck.getOperatingDays().stream()
+    String operatingString = "운영 정보 없음";
+    Optional<FoodTruckOperatingDay> todaySchedule =
+        truck.getOperatingDays().stream()
             .filter(schedule -> schedule.getFestivalDay() == currentFestivalDay)
             .findFirst();
 
-        if (todaySchedule.isPresent()) {
-            LocalTime start = todaySchedule.get().getStartTime();
-            LocalTime end = todaySchedule.get().getEndTime();
-            String dayOfWeek = today.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.KOREAN);
-            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-            operatingString = String.format("%d일(%s) %s - %s",
-                today.getDayOfMonth(), dayOfWeek, start.format(timeFormatter), end.format(timeFormatter));
-        }
+    if (todaySchedule.isPresent()) {
+      LocalTime start = todaySchedule.get().getStartTime();
+      LocalTime end = todaySchedule.get().getEndTime();
+      String dayOfWeek = today.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.KOREAN);
+      DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+      operatingString =
+          String.format(
+              "%d일(%s) %s - %s",
+              today.getDayOfMonth(),
+              dayOfWeek,
+              start.format(timeFormatter),
+              end.format(timeFormatter));
+    }
 
-        List<FoodTruckMenuResDto> menuList = foodTruckMenuRepository.findByFoodTruck(truck)
-            .stream()
-            .map(menu -> new FoodTruckMenuResDto(
-                menu.getMenuName(),
-                menu.getPrice(),
-                menu.isVegan()
-            ))
+    List<FoodTruckMenuResDto> menuList =
+        foodTruckMenuRepository.findByFoodTruck(truck).stream()
+            .map(
+                menu ->
+                    new FoodTruckMenuResDto(menu.getMenuName(), menu.getPrice(), menu.isVegan()))
             .collect(Collectors.toList());
 
-        int likeCount = Math.toIntExact(foodTruckLikeRepository.countByFoodTruck(truck));
+    int likeCount = Math.toIntExact(foodTruckLikeRepository.countByFoodTruck(truck));
 
-        boolean isLiked = false;
-        if (guestUuid != null) {
-            Optional<GuestUser> guestUser = guestUserRepository.findById(guestUuid);
-            if (guestUser.isPresent()) {
-                isLiked = foodTruckLikeRepository.findByGuestUserAndFoodTruck(guestUser.get(), truck).isPresent();
-            }
-        }
+    boolean isLiked = false;
+    if (guestUuid != null) {
+      Optional<GuestUser> guestUser = guestUserRepository.findById(guestUuid);
+      if (guestUser.isPresent()) {
+        isLiked =
+            foodTruckLikeRepository.findByGuestUserAndFoodTruck(guestUser.get(), truck).isPresent();
+      }
+    }
 
-        List<String> images = truck.getFoodTruckImages().stream()
+    List<String> images =
+        truck.getFoodTruckImages().stream()
             .map(FoodTruckImage::getImageUrl)
             .collect(Collectors.toList());
 
-        return new FoodTruckDetailResDto(
-            truck.getId(),
-            images,
-            truck.getName(),
-            truck.getDescription(),
-            operatingString,
-            menuList,
-            likeCount,
-            isLiked
-        );
-    }
+    return new FoodTruckDetailResDto(
+        truck.getId(),
+        images,
+        truck.getName(),
+        truck.getDescription(),
+        operatingString,
+        menuList,
+        likeCount,
+        isLiked);
+  }
 }

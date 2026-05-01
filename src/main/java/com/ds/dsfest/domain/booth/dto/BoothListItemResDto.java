@@ -10,7 +10,6 @@ import com.ds.dsfest.domain.booth.constant.BoothType;
 import com.ds.dsfest.domain.booth.entity.Booth;
 import com.ds.dsfest.domain.booth.entity.BoothImage;
 import com.ds.dsfest.domain.booth.entity.BoothOperatingDay;
-import com.ds.dsfest.domain.booth.entity.BoothTag;
 
 public record BoothListItemResDto(
     Long id,
@@ -19,7 +18,6 @@ public record BoothListItemResDto(
     Set<BoothType> boothTypes,
     String operatingSubject,
     String thumbnailUrl,
-    List<String> tags,
     List<String> operatingTimes) {
 
   private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm");
@@ -30,8 +28,6 @@ public record BoothListItemResDto(
             .min(Comparator.comparingInt(BoothImage::getImageOrder))
             .map(BoothImage::getImageUrl)
             .orElse(null);
-
-    List<String> tags = booth.getTags().stream().map(BoothTag::getTagName).toList();
 
     Set<BoothType> boothTypes =
         booth.getBoothTypes().isEmpty()
@@ -52,7 +48,6 @@ public record BoothListItemResDto(
         boothTypes,
         booth.getOperatingSubject(),
         thumbnailUrl,
-        tags,
         operatingTimes);
   }
 }

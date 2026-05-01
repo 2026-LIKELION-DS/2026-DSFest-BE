@@ -1,5 +1,15 @@
 package com.ds.dsfest.domain.notice.service;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.ds.dsfest.domain.notice.constant.NoticeCategory;
 import com.ds.dsfest.domain.notice.dto.NoticeCreateReqDto;
 import com.ds.dsfest.domain.notice.dto.NoticeDetailResDto;
@@ -12,15 +22,8 @@ import com.ds.dsfest.domain.notice.exception.NoticeErrorCode;
 import com.ds.dsfest.domain.notice.repository.NoticeRepository;
 import com.ds.dsfest.global.exception.CustomException;
 import com.ds.dsfest.global.infra.s3.S3Uploader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -155,10 +158,10 @@ public class NoticeService {
         .orElseThrow(() -> new CustomException(NoticeErrorCode.NOTICE_NOT_FOUND));
   }
 
-   @Transactional(readOnly = true)
-   public List<NoticeListItemResDto> getFrequentNoticeList() {
-      return noticeRepository.findTop4ByOrderByViewCountDescCreatedAtDesc().stream()
-          .map(NoticeListItemResDto::from)
-          .toList();
+  @Transactional(readOnly = true)
+  public List<NoticeListItemResDto> getFrequentNoticeList() {
+    return noticeRepository.findTop4ByOrderByViewCountDescCreatedAtDesc().stream()
+        .map(NoticeListItemResDto::from)
+        .toList();
   }
 }
