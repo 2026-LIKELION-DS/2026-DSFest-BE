@@ -16,6 +16,10 @@ ROOT = Path(__file__).resolve().parents[1]
 TSV_PATH = ROOT / "scripts" / "drive_files.tsv"
 OUT_PATH = ROOT / "src" / "main" / "resources" / "db" / "booth-images-seed.sql"
 
+# 운영진이 사진을 수정/재업로드 중인 부스 — INSERT 라인을 주석으로 출력.
+# 작업 끝나면 set에서 제거 후 재실행.
+SKIP_BOOTH_IDS: set[int] = {66}
+
 # "{boothNumber}-{order}. " 또는 "{boothNumber}. " (뒤 공백 없는 케이스도)
 FILENAME_RE = re.compile(r"^(\d+)(?:-(\d+))?\.\s*")
 ALLOWED_EXTS = {"jpg", "jpeg", "png", "gif", "webp", "heic", "pdf"}
@@ -84,11 +88,22 @@ def main() -> None:
     out.append("")
     out.append("INSERT INTO booth_images (booth_id, image_order, image_url) VALUES")
 
+    # 마지막 활성 row 인덱스를 찾아서 거기에만 ; 붙임 (skip 처리된 마지막 row 회피)
+    active_indices = [i for i, r in enumerate(rows) if r[0] not in SKIP_BOOTH_IDS]
+    last_active = active_indices[-1] if active_indices else -1
+
     for i, (booth_id, order, fid, fname, ext) in enumerate(rows):
-        # SQL 안전: 작은따옴표 escape
         url = url_for(fid, ext).replace("'", "''")
         comment = fname.replace("--", "- -")
-        sep = "," if i < len(rows) - 1 else ";"
+        if booth_id in SKIP_BOOTH_IDS:
+            out.append(
+                f"  -- TODO: 운영진 작업 대기 (skip list) — 끝나면 SKIP_BOOTH_IDS에서 제거 후 재실행"
+            )
+            out.append(
+                f"  -- ({booth_id}, {order}, '{url}'),  -- {comment}"
+            )
+            continue
+        sep = "," if i < last_active else ";"
         out.append(f"  ({booth_id}, {order}, '{url}'){sep}  -- {comment}")
     out.append("")
 
