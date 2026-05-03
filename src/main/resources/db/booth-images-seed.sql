@@ -39,8 +39,7 @@ INSERT INTO booth_images (booth_id, image_order, image_url) VALUES
   (29, 3, 'https://lh3.googleusercontent.com/d/1j1SLxHATETXYonNNcfRz6g9mYhhtLFdo=w1200'),  -- 29-3. 언더덕씨.jpg
   (29, 4, 'https://lh3.googleusercontent.com/d/1C9qzvboZfdKshE7F_IpEJWlfT5gxg-sK=w1200'),  -- 29-4. 언더덕씨.jpg
   (29, 5, 'https://lh3.googleusercontent.com/d/1oua4QWhE7TeSum2gXM5-VDoehNbxtfYW=w1200'),  -- 29-5. 언더덕씨.jpg
-  -- TODO: 재업로드 대기 중 (lh3 썸네일 생성 실패) — 운영진 재업로드 후 시드 재생성 필요
-  -- (30, 1, 'https://drive.google.com/thumbnail?id=16WbEwnCQx_INgNfjqifhLqrImVmYk3-4&sz=w1200'),  -- 30. 우리에서 만난 우리.pdf
+  (30, 1, 'https://drive.google.com/thumbnail?id=1rXs93AAzU1tB1QloKPhRWY1xdU-KMnni&sz=w1200'),  -- 30. 우리에서 만난 우리.pdf
   (32, 1, 'https://lh3.googleusercontent.com/d/1RRp90GJwZlRP7kxbU31-qK_rFtLpyhYo=w1200'),  -- 32-1. 덕컴타자연습.png
   (32, 2, 'https://lh3.googleusercontent.com/d/1eap9iNcwjhNiC668MkkbMmZCaYXJVh2q=w1200'),  -- 32-2. 덕컴타자연습.png
   (33, 1, 'https://lh3.googleusercontent.com/d/1KUuMuGs1YwPeHuza_cFuoEH_GQLUcx-m=w1200'),  -- 33. 혜연이가 뜨개 그만하래 같이 살 집 뜨고 있었는데.jpeg
@@ -104,7 +103,7 @@ INSERT INTO booth_images (booth_id, image_order, image_url) VALUES
   (62, 1, 'https://lh3.googleusercontent.com/d/1GTqO61HGLlzOIEX9MFTbvGYEnsb9VPrs=w1200'),  -- 62-1. 도봉또봄.jpeg
   (62, 2, 'https://lh3.googleusercontent.com/d/1hMUw5WC2zyNcZEqGDzvvnUuoJbAxR1Y7=w1200'),  -- 62-2. 도봉또봄.jpeg
   (64, 1, 'https://lh3.googleusercontent.com/d/1yrQ3cPGauU49fe5ov-mWlSc4DnF13Gpz=w1200'),  -- 64. 룡하다! 공룡타로.png
-  -- TODO: 사진 수정 대기 중 — 운영진 교체본 업로드 후 시드 재생성 필요
+  -- TODO: 운영진 작업 대기 (skip list) — 끝나면 SKIP_BOOTH_IDS에서 제거 후 재실행
   -- (66, 1, 'https://lh3.googleusercontent.com/d/1hafINnz59xu_nzLl_zyhs_Uk6ghp1tyt=w1200'),  -- 66. 35mm Archive.JPG
   (67, 1, 'https://lh3.googleusercontent.com/d/1RfqP_1kpy9nnN1cXZdTPmB819BTS6fiE=w1200'),  -- 67-1. 한 코, 한 땀.jpeg
   (67, 2, 'https://lh3.googleusercontent.com/d/1YWRiwkgurs9WrHkT9VSqAhzuB7hZZAFy=w1200'),  -- 67-2. 한 코, 한 땀.jpeg
