@@ -52,4 +52,7 @@ public class Artist extends BaseEntity {
 
   @Column(length = 500)
   private String youtubeUrl;
+
+  @Column(length = 500)
+  private String playlistUrl;
 }
