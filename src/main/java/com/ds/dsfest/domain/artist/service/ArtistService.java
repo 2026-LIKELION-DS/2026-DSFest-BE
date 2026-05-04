@@ -75,7 +75,7 @@ public class ArtistService {
 
   // 공연 상태 계산
   private CountdownStatus calculateCountdownStatus(Artist artist) {
-    LocalDateTime now = LocalDateTime.now();
+      LocalDateTime now = LocalDateTime.now(festivalClock);
 
     LocalDateTime start = LocalDateTime.of(artist.getPerformanceDate(), artist.getStartTime());
     LocalDateTime end = LocalDateTime.of(artist.getPerformanceDate(), artist.getEndTime());
