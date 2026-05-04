@@ -10,12 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ds.dsfest.domain.artist.dto.ArtistListResDto;
-import com.ds.dsfest.domain.artist.dto.ArtistPlaylistResDto;
 import com.ds.dsfest.domain.artist.entity.Artist;
 import com.ds.dsfest.domain.artist.entity.CountdownStatus;
-import com.ds.dsfest.domain.artist.exception.ArtistErrorCode;
 import com.ds.dsfest.domain.artist.repository.ArtistRepository;
-import com.ds.dsfest.global.exception.CustomException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +24,7 @@ public class ArtistService {
   private final ArtistRepository artistRepository;
   private final Clock festivalClock;
 
+  // DAY별 아티스트 조회
   public List<ArtistListResDto> getArtistsByDay(int day) {
     List<Artist> artists = artistRepository.findByFestivalDayOrderByStartTimeAsc(day);
 
@@ -44,13 +42,15 @@ public class ArtistService {
                     .endTime(artist.getEndTime())
                     .instagramUrl(artist.getInstagramUrl())
                     .youtubeUrl(artist.getYoutubeUrl())
+                    .playlistUrl(artist.getPlaylistUrl()) // ✅ 추가
                     .countdownStatus(calculateCountdownStatus(artist))
                     .build())
         .toList();
   }
 
+  // 오늘 아티스트 조회
   public List<ArtistListResDto> getArtistsByToday() {
-    LocalDate today = LocalDate.now(festivalClock); // 아티스트 공연 날짜가 오늘인 것만 조회
+    LocalDate today = LocalDate.now(festivalClock);
     List<Artist> artists = artistRepository.findByPerformanceDateOrderByStartTimeAsc(today);
 
     return artists.stream()
@@ -67,43 +67,28 @@ public class ArtistService {
                     .endTime(artist.getEndTime())
                     .instagramUrl(artist.getInstagramUrl())
                     .youtubeUrl(artist.getYoutubeUrl())
+                    .playlistUrl(artist.getPlaylistUrl()) // ✅ 추가
                     .countdownStatus(calculateCountdownStatus(artist))
                     .build())
         .toList();
   }
 
-  public ArtistPlaylistResDto getArtistPlaylist(Long artistId) {
-    Artist artist = getArtistById(artistId);
-
-    return ArtistPlaylistResDto.builder()
-        .artistId(artist.getId())
-        .artistName(artist.getName())
-        .youtubeUrl(artist.getYoutubeUrl())
-        .build();
-  }
-
-  private Artist getArtistById(Long artistId) {
-    return artistRepository
-        .findById(artistId)
-        .orElseThrow(() -> new CustomException(ArtistErrorCode.ARTIST_NOT_FOUND));
-  }
-
+  // 공연 상태 계산
   private CountdownStatus calculateCountdownStatus(Artist artist) {
     LocalDateTime now = LocalDateTime.now();
 
     LocalDateTime start = LocalDateTime.of(artist.getPerformanceDate(), artist.getStartTime());
-
     LocalDateTime end = LocalDateTime.of(artist.getPerformanceDate(), artist.getEndTime());
 
-    if (!now.isBefore(end)) { // now >= end
+    if (!now.isBefore(end)) {
       return CountdownStatus.ENDED;
     }
 
-    if (!now.isBefore(start)) { // start <= now < end
+    if (!now.isBefore(start)) {
       return CountdownStatus.LIVE;
     }
 
-    Duration duration = Duration.between(now, start); // now < start 보장됨
+    Duration duration = Duration.between(now, start);
 
     if (duration.compareTo(Duration.ofHours(24)) <= 0) {
       return CountdownStatus.WITHIN_24H;
