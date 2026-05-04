@@ -18,7 +18,7 @@ OUT_PATH = ROOT / "src" / "main" / "resources" / "db" / "booth-images-seed.sql"
 
 # 운영진이 사진을 수정/재업로드 중인 부스 — INSERT 라인을 주석으로 출력.
 # 작업 끝나면 set에서 제거 후 재실행.
-SKIP_BOOTH_IDS: set[int] = {66}
+SKIP_BOOTH_IDS: set[int] = set()
 
 # "{boothNumber}-{order}. " 또는 "{boothNumber}. " (뒤 공백 없는 케이스도)
 FILENAME_RE = re.compile(r"^(\d+)(?:-(\d+))?\.\s*")
