@@ -103,7 +103,7 @@ INSERT INTO booth_images (booth_id, image_order, image_url) VALUES
   (62, 1, 'https://lh3.googleusercontent.com/d/1GTqO61HGLlzOIEX9MFTbvGYEnsb9VPrs=w1200'),  -- 62-1. 도봉또봄.jpeg
   (62, 2, 'https://lh3.googleusercontent.com/d/1hMUw5WC2zyNcZEqGDzvvnUuoJbAxR1Y7=w1200'),  -- 62-2. 도봉또봄.jpeg
   (64, 1, 'https://lh3.googleusercontent.com/d/1yrQ3cPGauU49fe5ov-mWlSc4DnF13Gpz=w1200'),  -- 64. 룡하다! 공룡타로.png
-  (66, 1, 'https://lh3.googleusercontent.com/d/1bulotBVMkBEQVXkImWp39ZiOsmoJfCzG=w1200'),  -- 66. 35mm Archive.JPG(수정)
+  (66, 1, 'https://lh3.googleusercontent.com/d/1-p47-e5CzouHNy4lE8E5EAPyjId2gHJn=w1200'),  -- 66. 35mm Archive.JPG(수정)
   (67, 1, 'https://lh3.googleusercontent.com/d/1RfqP_1kpy9nnN1cXZdTPmB819BTS6fiE=w1200'),  -- 67-1. 한 코, 한 땀.jpeg
   (67, 2, 'https://lh3.googleusercontent.com/d/1YWRiwkgurs9WrHkT9VSqAhzuB7hZZAFy=w1200'),  -- 67-2. 한 코, 한 땀.jpeg
   (67, 3, 'https://lh3.googleusercontent.com/d/1Rp8OyZiulUoCiMcntCjxcsDere6SmYed=w1200'),  -- 67-3. 한 코, 한 땀.jpeg
