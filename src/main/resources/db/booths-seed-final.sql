@@ -98,7 +98,7 @@ RISE사업단 지역상생 부스', '라이즈2', '라이즈2', 'RISE 사업단 
 말랑 핀뱃지:있음, 엽서:있음, 럭키드로우:있음, 슬라임 만들기 체험:있음, 키링:있음
 
 그런데, 덕우 너만 없더라..', 'https://open.kakao.com/o/spELt1pi', NULL, '@mul_ggo', NULL, NULL, NULL, NOW(), NOW()),
-  (35, 35, 'PLAGUE BLUSTERS', '바이오공학전공', '전공', '전염병을 물리치는 컨셉의 체험형 부스
+  (35, 35, 'PLAGUE BUSTERS', '바이오공학전공', '전공', '전염병을 물리치는 컨셉의 체험형 부스
 파라필름 늘리기, 리듬게임을 통해 물총을 획득한 후 마지막 단계는 물병 쓰러뜨리기까지!!
 또한, CD 키링과 대학생 공감 문구를 담은 키캡 키링 굿즈로 판매할 예정입니다~', 'http://pf.kakao.com/_xnKeyn', NULL, '@duksung_biotech', NULL, NULL, NULL, NOW(), NOW()),
   (36, 36, '비 온 뒤 땅이 굳는다', '박성은', '개인', '세상에 단 하나뿐인 나만의 부채! 즉석에서 그림, 이름, 문구 커스텀 가능! 덕성의 명물 까치, 왜가리, 너구리(?)까지 전부 그려드립니다!', 'https://open.kakao.com/o/sBLV7isi', NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
