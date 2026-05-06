@@ -55,4 +55,7 @@ public interface TestNoticeControllerDocs {
               encoding = @Encoding(name = "data", contentType = MediaType.APPLICATION_JSON_VALUE)))
   ResponseEntity<ApiResponse<NoticeDetailResDto>> updateNotice(
       Long noticeId, NoticeUpdateReqDto req, List<MultipartFile> newImages) throws IOException;
+
+  @Operation(summary = "[TEST] 공지 삭제", description = "로그인 없이 공지사항을 삭제합니다. 테스트 API입니다.")
+  ResponseEntity<ApiResponse<Void>> deleteNotice(Long noticeId);
 }
