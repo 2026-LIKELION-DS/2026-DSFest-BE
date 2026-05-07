@@ -18,9 +18,14 @@ public record BoothStatusItemResDto(
     Set<BoothType> boothTypes,
     String operatingSubject,
     String thumbnailUrl,
-    List<String> tags) {
+    List<String> tags,
+    Integer positionNumber) {
 
   public static BoothStatusItemResDto from(Booth booth, String statusTag) {
+    return from(booth, statusTag, null);
+  }
+
+  public static BoothStatusItemResDto from(Booth booth, String statusTag, Integer positionNumber) {
     String thumbnailUrl =
         booth.getImages().stream()
             .min(Comparator.comparingInt(BoothImage::getImageOrder))
@@ -45,6 +50,12 @@ public record BoothStatusItemResDto(
         boothTypes,
         booth.getOperatingSubject(),
         thumbnailUrl,
-        tags);
+        tags,
+        positionNumber);
+  }
+
+  public BoothStatusItemResDto withPositionNumber(Integer positionNumber) {
+    return new BoothStatusItemResDto(
+        id, boothNumber, name, boothTypes, operatingSubject, thumbnailUrl, tags, positionNumber);
   }
 }

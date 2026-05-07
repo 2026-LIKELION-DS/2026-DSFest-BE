@@ -66,6 +66,9 @@ public interface BoothControllerDocs {
       summary = "랜덤 부스 추천",
       description =
           "festivalDay 기준 '운영중' 또는 '운영 예정' 상태인 부스 중 무작위 1개를 반환합니다."
+              + " 응답에는 해당 festivalDay 기준 부스 위치 번호(positionNumber)도 포함됩니다."
+              + " 같은 날 낮·밤 자리가 모두 있는 경우 현재 운영중인 슬롯 → 가장 가까운 운영예정 슬롯의 자리를 사용합니다."
+              + " 위치 정보가 없으면 positionNumber는 null이며,"
               + " 해당 상태의 부스가 하나도 없으면(모두 '운영 종료') result가 null입니다.")
   ResponseEntity<ApiResponse<BoothStatusItemResDto>> getRandomRecommendedBooth(
       @RequestParam @Min(1) int day);

@@ -220,7 +220,49 @@ public class BoothService {
       }
     }
     if (candidates.isEmpty()) return null;
-    return candidates.get(random.nextInt(candidates.size()));
+    BoothStatusItemResDto picked = candidates.get(random.nextInt(candidates.size()));
+    Integer positionNumber = resolveRecommendedPositionNumber(picked.id(), festivalDay);
+    return picked.withPositionNumber(positionNumber);
+  }
+
+  private Integer resolveRecommendedPositionNumber(Long boothId, int festivalDay) {
+    List<BoothMapPosition> positions =
+        boothMapPositionRepository.findAllByBoothId(boothId).stream()
+            .filter(p -> p.getFestivalDay() == festivalDay)
+            .toList();
+    if (positions.isEmpty()) return null;
+    if (positions.size() == 1) return positions.get(0).getPositionNumber();
+
+    BoothType preferredType = pickPreferredDayNightType(boothId, festivalDay);
+    return positions.stream()
+        .filter(p -> p.getDayNightType() == preferredType)
+        .findFirst()
+        .map(BoothMapPosition::getPositionNumber)
+        .orElseGet(() -> positions.get(0).getPositionNumber());
+  }
+
+  private BoothType pickPreferredDayNightType(Long boothId, int festivalDay) {
+    Booth booth = boothRepository.findDetailById(boothId).orElse(null);
+    if (booth == null) return BoothType.DAY;
+
+    LocalTime effective = resolveEffectiveTime(festivalDay, LocalDateTime.now(clock));
+    BoothOperatingDay running = null;
+    BoothOperatingDay earliestUpcoming = null;
+    for (BoothOperatingDay od : booth.getOperatingDays()) {
+      if (od.getFestivalDay() != festivalDay) continue;
+      if (!effective.isBefore(od.getStartTime()) && effective.isBefore(od.getEndTime())) {
+        running = od;
+        break;
+      } else if (effective.isBefore(od.getStartTime())) {
+        if (earliestUpcoming == null
+            || od.getStartTime().isBefore(earliestUpcoming.getStartTime())) {
+          earliestUpcoming = od;
+        }
+      }
+    }
+    BoothOperatingDay relevant = running != null ? running : earliestUpcoming;
+    if (relevant == null) return BoothType.DAY;
+    return relevant.getStartTime().isBefore(NIGHT_START) ? BoothType.DAY : BoothType.NIGHT;
   }
 
   private LocalTime resolveEffectiveTime(int festivalDay, LocalDateTime now) {
