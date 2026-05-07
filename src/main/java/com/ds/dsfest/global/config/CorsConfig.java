@@ -15,15 +15,19 @@ public class CorsConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowedOrigins(
+        // 개발 환경에서의 허용 도메인
         List.of(
             "http://localhost:3000",
             "http://localhost:5173",
+            "http://localhost:5174",
             "http://localhost:5500",
             "http://127.0.0.1:5500"));
     config.setAllowedOrigins(
+        // 배포 환경에서의 허용 도메인
         List.of(
             "http://localhost:3000",
             "http://localhost:5173",
+            "http://localhost:5174",
             "https://api.youth-of-duksung.site",
             "https://youth-of-duksung.site",
             "https://www.youth-of-duksung.site"));

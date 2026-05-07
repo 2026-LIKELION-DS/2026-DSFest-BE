@@ -8,11 +8,14 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.ds.dsfest.domain.notice.constant.NoticeCategory;
 import com.ds.dsfest.domain.notice.entity.Notice;
 
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
   List<Notice> findAllByOrderByCreatedAtDesc();
+
+  List<Notice> findAllByCategoryOrderByCreatedAtDesc(NoticeCategory category);
 
   Optional<Notice> findTopByUrgentTrueOrderByCreatedAtDesc();
 
@@ -20,7 +23,7 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
       "SELECT n FROM Notice n WHERE n.title LIKE %:keyword% OR n.content LIKE %:keyword% ORDER BY n.createdAt DESC")
   List<Notice> searchByKeyword(@Param("keyword") String keyword);
 
-  List<Notice> findTop3ByOrderByViewCountDesc();
+  List<Notice> findTop4ByOrderByViewCountDescCreatedAtDesc();
 
   @Modifying(clearAutomatically = true)
   @Query("UPDATE Notice n SET n.viewCount = n.viewCount + 1 WHERE n.id = :id")
