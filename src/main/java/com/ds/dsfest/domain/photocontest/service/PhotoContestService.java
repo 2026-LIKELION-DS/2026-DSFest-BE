@@ -182,7 +182,8 @@ public class PhotoContestService {
                 photo.getTitle(),
                 photo.getAuthorName(),
                 photo.getTheme().name(),
-                count
+                count,
+                photo.getImageUrl()
             );
         }).toList();
 
