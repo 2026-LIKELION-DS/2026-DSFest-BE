@@ -65,7 +65,8 @@ public interface BoothControllerDocs {
   @Operation(
       summary = "랜덤 부스 추천",
       description =
-          "festivalDay 기준 현재 '운영중' 상태인 부스 중 무작위 1개를 반환합니다." + " 운영중인 부스가 하나도 없으면 result가 null입니다.")
+          "festivalDay 기준 '운영중' 또는 '운영 예정' 상태인 부스 중 무작위 1개를 반환합니다."
+              + " 해당 상태의 부스가 하나도 없으면(모두 '운영 종료') result가 null입니다.")
   ResponseEntity<ApiResponse<BoothStatusItemResDto>> getRandomRecommendedBooth(
       @RequestParam @Min(1) int day);
 }
