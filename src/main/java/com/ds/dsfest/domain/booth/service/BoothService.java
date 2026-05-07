@@ -211,14 +211,16 @@ public class BoothService {
   }
 
   public BoothStatusItemResDto getRandomRecommendedBooth(int festivalDay) {
-    List<BoothStatusItemResDto> running = new ArrayList<>();
+    List<BoothStatusItemResDto> candidates = new ArrayList<>();
     for (BoothStatusItemResDto b : getBoothsWithStatus(festivalDay, false)) {
-      if (!b.tags().isEmpty() && TAG_RUNNING.equals(b.tags().get(0))) {
-        running.add(b);
+      if (b.tags().isEmpty()) continue;
+      String status = b.tags().get(0);
+      if (TAG_RUNNING.equals(status) || TAG_UPCOMING.equals(status)) {
+        candidates.add(b);
       }
     }
-    if (running.isEmpty()) return null;
-    return running.get(random.nextInt(running.size()));
+    if (candidates.isEmpty()) return null;
+    return candidates.get(random.nextInt(candidates.size()));
   }
 
   private LocalTime resolveEffectiveTime(int festivalDay, LocalDateTime now) {

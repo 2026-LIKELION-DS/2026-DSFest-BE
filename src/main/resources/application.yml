@@ -17,3 +17,4 @@ server:
 
 festival:
   start-date: ${FESTIVAL_START_DATE:2026-05-13}
+  fake-now: ${FESTIVAL_FAKE_NOW:}
