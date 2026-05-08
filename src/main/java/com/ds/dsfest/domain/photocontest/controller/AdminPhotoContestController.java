@@ -18,13 +18,13 @@ import java.util.Map;
 @RequestMapping("/api/admin/photo-contest")
 public class AdminPhotoContestController implements AdminPhotoContestControllerDocs { // 💡 Docs 구현!
 
-    private final PhotoContestService photoContestService;
+  private final PhotoContestService photoContestService;
 
-    @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/results")
-    public ResponseEntity<ApiResponse<Map<String, List<PhotoRankResDto>>>> getVoteResults() {
-        Map<String, List<PhotoRankResDto>> results = photoContestService.getVoteResults(true);
-        return ResponseEntity.ok(ApiResponse.onSuccess(results));
-    }
+  @Override
+  @PreAuthorize("hasRole('ADMIN')")
+  @GetMapping("/results")
+  public ResponseEntity<ApiResponse<Map<String, List<PhotoRankResDto>>>> getVoteResults() {
+    Map<String, List<PhotoRankResDto>> results = photoContestService.getVoteResults(true);
+    return ResponseEntity.ok(ApiResponse.onSuccess(results));
+  }
 }

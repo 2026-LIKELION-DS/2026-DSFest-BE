@@ -1,12 +1,15 @@
 package com.ds.dsfest.domain.booth.service;
 
 import java.time.Clock;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -47,6 +50,16 @@ public class BoothService {
   private static final String TAG_UPCOMING = "운영 예정";
   private static final String TAG_ENDED = "운영 종료";
 
+  // 대학일자리본부 1·2가 day 3 DAY에 같은 자리(8번)를 공유 — 합성 아이템 하나로 합쳐서 노출.
+  private static final Long MERGED_BOOTH_ID = 1011L;
+  private static final Long MERGED_PEER_A_ID = 10L;
+  private static final Long MERGED_PEER_B_ID = 11L;
+  private static final int MERGED_FESTIVAL_DAY = 3;
+  private static final BoothType MERGED_DAY_NIGHT = BoothType.DAY;
+  private static final int MERGED_POSITION = 8;
+  private static final String MERGED_NAME = "대학일자리본부 1, 2";
+  private static final DateTimeFormatter MERGED_TIME_FMT = DateTimeFormatter.ofPattern("HH:mm");
+
   private final BoothRepository boothRepository;
   private final BoothOperatingDayRepository boothOperatingDayRepository;
   private final BoothMapPositionRepository boothMapPositionRepository;
@@ -86,9 +99,45 @@ public class BoothService {
   }
 
   public List<BoothMapItemResDto> getBoothMap(int festivalDay, BoothType dayNightType) {
-    return boothMapPositionRepository.findAllByDayAndType(festivalDay, dayNightType).stream()
-        .map(BoothMapItemResDto::from)
-        .toList();
+    List<BoothMapPosition> positions =
+        boothMapPositionRepository.findAllByDayAndType(festivalDay, dayNightType);
+
+    if (festivalDay == MERGED_FESTIVAL_DAY && dayNightType == MERGED_DAY_NIGHT) {
+      return mergeUnivJobMapItems(positions);
+    }
+
+    return positions.stream().map(BoothMapItemResDto::from).toList();
+  }
+
+  private List<BoothMapItemResDto> mergeUnivJobMapItems(List<BoothMapPosition> positions) {
+    List<BoothMapItemResDto> items = new ArrayList<>();
+    boolean mergedAdded = false;
+    for (BoothMapPosition p : positions) {
+      Long bid = p.getBooth().getId();
+      boolean isMergeTarget =
+          (MERGED_PEER_A_ID.equals(bid) || MERGED_PEER_B_ID.equals(bid))
+              && p.getPositionNumber() == MERGED_POSITION;
+      if (isMergeTarget) {
+        if (!mergedAdded) {
+          items.add(buildMergedMapItem());
+          mergedAdded = true;
+        }
+      } else {
+        items.add(BoothMapItemResDto.from(p));
+      }
+    }
+    return items;
+  }
+
+  private BoothMapItemResDto buildMergedMapItem() {
+    return new BoothMapItemResDto(
+        MERGED_BOOTH_ID,
+        MERGED_PEER_A_ID.intValue(),
+        MERGED_NAME,
+        EnumSet.of(BoothType.DAY),
+        MERGED_NAME,
+        null,
+        MERGED_POSITION);
   }
 
   public List<BoothStatusItemResDto> getBoothsWithStatus(int festivalDay, boolean activeOnly) {
@@ -181,6 +230,10 @@ public class BoothService {
   }
 
   public BoothDetailResDto getBoothDetail(Long boothId) {
+    if (MERGED_BOOTH_ID.equals(boothId)) {
+      return buildMergedBoothDetail();
+    }
+
     Booth booth =
         boothRepository
             .findDetailById(boothId)
@@ -198,6 +251,11 @@ public class BoothService {
   }
 
   private String resolveStatusTag(Booth booth, LocalDateTime now) {
+    String text = booth.getOperatingDaysText();
+    if (text != null && !text.isBlank()) {
+      return TAG_RUNNING;
+    }
+
     LocalDate today = now.toLocalDate();
     LocalTime nowTime = now.toLocalTime();
     long diffDays = ChronoUnit.DAYS.between(festivalStartDate, today);
@@ -222,5 +280,103 @@ public class BoothService {
     if (anyRunning) return TAG_RUNNING;
     if (anyUpcoming) return TAG_UPCOMING;
     return TAG_ENDED;
+  }
+
+  private BoothDetailResDto buildMergedBoothDetail() {
+    Booth boothA =
+        boothRepository
+            .findDetailById(MERGED_PEER_A_ID)
+            .orElseThrow(() -> new CustomException(BoothErrorCode.BOOTH_NOT_FOUND));
+    Booth boothB =
+        boothRepository
+            .findDetailById(MERGED_PEER_B_ID)
+            .orElseThrow(() -> new CustomException(BoothErrorCode.BOOTH_NOT_FOUND));
+
+    boothA.getTags().size();
+    boothA.getImages().size();
+    boothB.getTags().size();
+    boothB.getImages().size();
+
+    String descA = boothA.getDescription() == null ? "" : boothA.getDescription();
+    String descB = boothB.getDescription() == null ? "" : boothB.getDescription();
+    String mergedDescription = (descA + "\n\n" + descB).trim();
+
+    LocalDate mergedDate = festivalStartDate.plusDays((long) MERGED_FESTIVAL_DAY - 1);
+    String header =
+        mergedDate.getDayOfMonth() + "일(" + toKoreanDow(mergedDate.getDayOfWeek()) + ") ";
+    List<String> operatingDays =
+        boothA.getOperatingDays().stream()
+            .filter(
+                od ->
+                    od.getFestivalDay() == MERGED_FESTIVAL_DAY
+                        && od.getStartTime().isBefore(DAY_END))
+            .sorted(Comparator.comparing(BoothOperatingDay::getStartTime))
+            .map(
+                od ->
+                    header
+                        + od.getStartTime().format(MERGED_TIME_FMT)
+                        + "~"
+                        + od.getEndTime().format(MERGED_TIME_FMT))
+            .distinct()
+            .toList();
+
+    List<String> positions = List.of(MERGED_FESTIVAL_DAY + "일차 낮: " + MERGED_POSITION + "번");
+
+    String statusTag = resolveMergedStatusTag(LocalDateTime.now(clock), mergedDate, boothA);
+    List<String> tags = statusTag != null ? List.of(statusTag) : List.of();
+
+    return new BoothDetailResDto(
+        MERGED_BOOTH_ID,
+        MERGED_PEER_A_ID.intValue(),
+        MERGED_NAME,
+        EnumSet.of(BoothType.DAY),
+        MERGED_NAME,
+        boothA.getAffiliation(),
+        mergedDescription,
+        null,
+        null,
+        null,
+        null,
+        null,
+        tags,
+        List.of(),
+        List.of(),
+        operatingDays,
+        positions);
+  }
+
+  private String resolveMergedStatusTag(LocalDateTime now, LocalDate mergedDate, Booth boothA) {
+    LocalTime nowTime = now.toLocalTime();
+    LocalDate today = now.toLocalDate();
+
+    if (today.isBefore(mergedDate)) return TAG_UPCOMING;
+    if (today.isAfter(mergedDate)) return TAG_ENDED;
+
+    boolean anyRunning = false;
+    boolean anyUpcoming = false;
+    for (BoothOperatingDay od : boothA.getOperatingDays()) {
+      if (od.getFestivalDay() != MERGED_FESTIVAL_DAY) continue;
+      if (!od.getStartTime().isBefore(DAY_END)) continue; // DAY 슬롯만
+      if (!nowTime.isBefore(od.getStartTime()) && nowTime.isBefore(od.getEndTime())) {
+        anyRunning = true;
+      } else if (nowTime.isBefore(od.getStartTime())) {
+        anyUpcoming = true;
+      }
+    }
+    if (anyRunning) return TAG_RUNNING;
+    if (anyUpcoming) return TAG_UPCOMING;
+    return TAG_ENDED;
+  }
+
+  private static String toKoreanDow(DayOfWeek dow) {
+    return switch (dow) {
+      case MONDAY -> "월";
+      case TUESDAY -> "화";
+      case WEDNESDAY -> "수";
+      case THURSDAY -> "목";
+      case FRIDAY -> "금";
+      case SATURDAY -> "토";
+      case SUNDAY -> "일";
+    };
   }
 }

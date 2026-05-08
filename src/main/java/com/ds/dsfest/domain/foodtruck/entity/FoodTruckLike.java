@@ -1,8 +1,10 @@
 package com.ds.dsfest.domain.foodtruck.entity;
 
+import jakarta.persistence.*;
+
 import com.ds.dsfest.domain.user.entity.GuestUser;
 import com.ds.dsfest.global.common.BaseEntity;
-import jakarta.persistence.*;
+
 import lombok.*;
 
 @Getter

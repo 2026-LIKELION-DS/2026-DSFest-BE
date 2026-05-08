@@ -25,5 +25,6 @@ public class ArtistListResDto {
   private String instagramUrl;
   private String youtubeUrl;
 
+  private String playlistUrl;
   private CountdownStatus countdownStatus;
 }

@@ -1,6 +1,7 @@
 package com.ds.dsfest.domain.livetalk.service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,7 +33,7 @@ public class LiveTalkService {
   @Transactional(readOnly = true)
   public List<ChatMessageResDto> getRecentMessages() {
     return chatMessageRepository.findTop50ByOrderByCreatedAtDesc().stream()
-        .sorted((a, b) -> a.getCreatedAt().compareTo(b.getCreatedAt()))
+        .sorted(Comparator.comparing(ChatMessage::getCreatedAt).thenComparing(ChatMessage::getId))
         .map(chatMessageMapper::toResDto)
         .toList();
   }

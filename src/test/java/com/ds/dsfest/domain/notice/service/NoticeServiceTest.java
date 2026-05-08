@@ -4,10 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -161,7 +158,8 @@ class NoticeServiceTest {
   void searchNotices_empty_returnsRecommended() {
     Notice recommended = Notice.create("자주 찾는 공지", "내용", NoticeCategory.ETC, false);
     when(noticeRepository.searchByKeyword("없는키워드")).thenReturn(List.of());
-    when(noticeRepository.findTop3ByOrderByViewCountDesc()).thenReturn(List.of(recommended));
+    when(noticeRepository.findTop4ByOrderByViewCountDescCreatedAtDesc())
+        .thenReturn(List.of(recommended));
 
     NoticeSearchResDto result = noticeService.searchNotices("없는키워드");
 
@@ -180,7 +178,7 @@ class NoticeServiceTest {
 
     assertThat(result.results()).hasSize(1);
     assertThat(result.recommended()).isEmpty();
-    verify(noticeRepository, never()).findTop3ByOrderByViewCountDesc();
+    verify(noticeRepository, never()).findTop4ByOrderByViewCountDescCreatedAtDesc();
   }
 
   @Test

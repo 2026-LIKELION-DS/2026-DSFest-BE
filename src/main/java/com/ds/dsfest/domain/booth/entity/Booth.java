@@ -54,6 +54,9 @@ public class Booth extends BaseEntity {
   @Column(nullable = false, length = 100)
   private String operatingSubject;
 
+  @Column(length = 100)
+  private String affiliation;
+
   @Column(columnDefinition = "TEXT")
   private String description;
 
@@ -65,6 +68,22 @@ public class Booth extends BaseEntity {
 
   @Column(length = 500)
   private String instagramUrl;
+
+  @Column(length = 500)
+  private String collabInstagramUrl;
+
+  @Column(length = 500)
+  private String youtubeUrl;
+
+  @Column(length = 255)
+  private String operatingDaysText;
+
+  @ElementCollection(fetch = FetchType.LAZY)
+  @CollectionTable(
+      name = "booth_categories",
+      joinColumns = @JoinColumn(name = "booth_id", nullable = false))
+  @Column(name = "category_name", nullable = false, length = 50)
+  private List<String> categories = new ArrayList<>();
 
   @OneToMany(mappedBy = "booth", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<BoothTag> tags = new ArrayList<>();

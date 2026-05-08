@@ -75,7 +75,7 @@ jobs:
             echo "JWT_ACCESS_EXPIRATION=${{ secrets.JWT_ACCESS_EXPIRATION }}" >> .env.prod
             echo "JWT_REFRESH_EXPIRATION=${{ secrets.JWT_REFRESH_EXPIRATION }}" >> .env.prod
             echo "ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }}" >> .env.prod
-            echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> .env.prod
+            printf 'ADMIN_PASSWORD=%s\n' '${{ secrets.ADMIN_PASSWORD }}' >> .env.prod
             echo "AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}" >> .env.prod
             echo "AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}" >> .env.prod
             echo "SPRING_PROFILES_ACTIVE=${{ secrets.SPRING_PROFILES_ACTIVE }}" >> .env.prod

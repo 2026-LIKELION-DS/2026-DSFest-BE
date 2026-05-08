@@ -32,8 +32,11 @@ public class ChatTopic extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Column(nullable = true, length = 255)
+  private String subtitle; // 서브 문구 (소제목)
+
   @Column(nullable = false, length = 255)
-  private String content;
+  private String title; // 메인 문구 (대제목)
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 10)
@@ -46,6 +49,6 @@ public class ChatTopic extends BaseEntity {
   private LocalDateTime endTime;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "artist_id")
+  @JoinColumn(name = "artist_id", nullable = true)
   private Artist artist;
 }

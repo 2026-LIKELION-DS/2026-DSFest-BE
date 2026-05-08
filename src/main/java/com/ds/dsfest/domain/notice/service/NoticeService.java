@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ds.dsfest.domain.notice.constant.NoticeCategory;
 import com.ds.dsfest.domain.notice.dto.NoticeCreateReqDto;
 import com.ds.dsfest.domain.notice.dto.NoticeDetailResDto;
 import com.ds.dsfest.domain.notice.dto.NoticeListItemResDto;
@@ -49,6 +50,13 @@ public class NoticeService {
   @Transactional(readOnly = true)
   public List<NoticeListItemResDto> getNoticeList() {
     return noticeRepository.findAllByOrderByCreatedAtDesc().stream()
+        .map(NoticeListItemResDto::from)
+        .toList();
+  }
+
+  @Transactional(readOnly = true)
+  public List<NoticeListItemResDto> getNoticeListByCategory(NoticeCategory category) {
+    return noticeRepository.findAllByCategoryOrderByCreatedAtDesc(category).stream()
         .map(NoticeListItemResDto::from)
         .toList();
   }
@@ -94,7 +102,7 @@ public class NoticeService {
 
     List<NoticeListItemResDto> recommended =
         results.isEmpty()
-            ? noticeRepository.findTop3ByOrderByViewCountDesc().stream()
+            ? noticeRepository.findTop4ByOrderByViewCountDescCreatedAtDesc().stream()
                 .map(NoticeListItemResDto::from)
                 .toList()
             : List.of();
@@ -148,5 +156,12 @@ public class NoticeService {
     return noticeRepository
         .findById(noticeId)
         .orElseThrow(() -> new CustomException(NoticeErrorCode.NOTICE_NOT_FOUND));
+  }
+
+  @Transactional(readOnly = true)
+  public List<NoticeListItemResDto> getFrequentNoticeList() {
+    return noticeRepository.findTop4ByOrderByViewCountDescCreatedAtDesc().stream()
+        .map(NoticeListItemResDto::from)
+        .toList();
   }
 }

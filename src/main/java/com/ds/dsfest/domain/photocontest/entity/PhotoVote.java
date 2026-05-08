@@ -1,7 +1,9 @@
 package com.ds.dsfest.domain.photocontest.entity;
 
-import com.ds.dsfest.global.common.BaseEntity;
 import jakarta.persistence.*;
+
+import com.ds.dsfest.global.common.BaseEntity;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +26,7 @@ public class PhotoVote extends BaseEntity {
   private String voterKey;
 
   public PhotoVote(PhotoEntry photoEntry, String voterKey) {
-      this.photoEntry = photoEntry;
-      this.voterKey = voterKey;
+    this.photoEntry = photoEntry;
+    this.voterKey = voterKey;
   }
 }
