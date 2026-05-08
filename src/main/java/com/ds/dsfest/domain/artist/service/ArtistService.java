@@ -90,10 +90,10 @@ public class ArtistService {
 
     Duration duration = Duration.between(now, start);
 
-    if (duration.compareTo(Duration.ofHours(24)) <= 0) {
-      return CountdownStatus.WITHIN_24H;
+    if (duration.compareTo(Duration.ofHours(72)) <= 0) {
+      return CountdownStatus.WITHIN_72H;
     }
 
-    return CountdownStatus.MORE_THAN_24H;
+    return CountdownStatus.MORE_THAN_72H;
   }
 }
