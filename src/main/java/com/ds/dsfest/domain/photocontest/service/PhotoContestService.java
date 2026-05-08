@@ -168,7 +168,7 @@ public class PhotoContestService {
     }
 
     /**
-     * 총 학생용 투표 결과 집계 (테마별 분류)
+     * 투표 결과 집계 (테마별 분류)
      * @param isAdmin 관리자 여부 (true면 시간 제한 무시, false면 15시 이후 차단)
      */
     @Transactional(readOnly = true)
@@ -199,7 +199,9 @@ public class PhotoContestService {
                 count,
                 photo.getImageUrl()
             );
-        }).toList();
+        })
+            .sorted(java.util.Comparator.comparing(PhotoRankResDto::voteCount).reversed())
+            .toList();
 
         return allRanks.stream()
             .collect(Collectors.groupingBy(PhotoRankResDto::theme));
