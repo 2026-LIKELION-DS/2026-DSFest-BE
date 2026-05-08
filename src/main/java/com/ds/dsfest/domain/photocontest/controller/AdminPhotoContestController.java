@@ -24,7 +24,7 @@ public class AdminPhotoContestController implements AdminPhotoContestControllerD
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/results")
     public ResponseEntity<ApiResponse<Map<String, List<PhotoRankResDto>>>> getVoteResults() {
-        Map<String, List<PhotoRankResDto>> results = photoContestService.getVoteResults();
+        Map<String, List<PhotoRankResDto>> results = photoContestService.getVoteResults(true);
         return ResponseEntity.ok(ApiResponse.onSuccess(results));
     }
 }

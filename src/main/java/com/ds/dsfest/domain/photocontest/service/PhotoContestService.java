@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.Clock;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,6 +32,7 @@ public class PhotoContestService {
     private final PhotoVoteRepository photoVoteRepository;
     private final VerifiedStudentRepository verifiedStudentRepository;
     private final PhotoParticipationRepository photoParticipationRepository;
+    private final Clock clock;
 
     /**
      * 사진 콘테스트의 현재 상태 및 마감 시간을 반환합니다.
@@ -167,9 +169,21 @@ public class PhotoContestService {
 
     /**
      * 총 학생용 투표 결과 집계 (테마별 분류)
+     * @param isAdmin 관리자 여부 (true면 시간 제한 무시, false면 15시 이후 차단)
      */
     @Transactional(readOnly = true)
-    public Map<String, List<PhotoRankResDto>> getVoteResults() {
+    public Map<String, List<PhotoRankResDto>> getVoteResults(boolean isAdmin) {
+
+        /**
+         * admin이 아닐 경우(즉, 일반 학생)
+         */
+        if (!isAdmin) {
+            LocalDateTime blindTime = LocalDateTime.of(2026, 5, 15, 15, 0, 0);
+            if (LocalDateTime.now(clock).isAfter(blindTime)) {
+                throw new CustomException(GlobalErrorCode.BAD_REQUEST);
+            }
+        }
+
         List<Object[]> results = photoVoteRepository.countVotesPerPhoto();
 
         List<PhotoRankResDto> allRanks = results.stream().map(result -> {
