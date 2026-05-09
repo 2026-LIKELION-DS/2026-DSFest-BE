@@ -179,7 +179,9 @@ public class PhotoContestService {
          */
         if (!isAdmin) {
             LocalDateTime blindTime = LocalDateTime.of(2026, 5, 15, 15, 0, 0);
-            if (!LocalDateTime.now(clock).isBefore(blindTime)) {
+            LocalDateTime openTime = LocalDateTime.of(2026, 5, 15, 19, 0, 0);
+            LocalDateTime now = LocalDateTime.now(clock);
+            if (!now.isBefore(blindTime) && now.isBefore(openTime)) {
                 throw new CustomException(GlobalErrorCode.BAD_REQUEST);
             }
         }
