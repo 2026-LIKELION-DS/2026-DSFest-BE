@@ -1,17 +1,19 @@
 package com.ds.dsfest.domain.photocontest.controller;
 
-import com.ds.dsfest.domain.photocontest.dto.PhotoRankResDto;
-import com.ds.dsfest.domain.photocontest.service.PhotoContestService;
-import com.ds.dsfest.global.response.ApiResponse;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
+import com.ds.dsfest.domain.photocontest.dto.PhotoRankResDto;
+import com.ds.dsfest.domain.photocontest.service.PhotoContestService;
+import com.ds.dsfest.global.response.ApiResponse;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor

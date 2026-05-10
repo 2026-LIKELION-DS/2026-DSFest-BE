@@ -1,16 +1,19 @@
 package com.ds.dsfest.domain.photocontest.controller;
 
-import com.ds.dsfest.domain.photocontest.dto.*;
-import com.ds.dsfest.global.response.ApiResponse;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import java.util.Map;
+
 import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.List;
-import java.util.Map;
+import com.ds.dsfest.domain.photocontest.dto.*;
+import com.ds.dsfest.global.response.ApiResponse;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "Photo Contest", description = "사진 콘테스트 관련 API")
 public interface PhotoContestControllerDocs {
@@ -30,6 +33,6 @@ public interface PhotoContestControllerDocs {
   @Operation(summary = "사진 투표하기", description = "선택한 3장의 사진에 투표합니다. (1인 1회 제한, 주제별 1장씩 필수)")
   ResponseEntity<ApiResponse<String>> votePhotos(@Valid @RequestBody PhotoVoteReqDto reqDto);
 
-    @Operation(summary = "실시간 사진 랭킹 조회", description = "테마별 사진 득표수 랭킹을 조회합니다. (15일 15시 이후 비공개)")
-    ResponseEntity<ApiResponse<Map<String, List<PhotoRankResDto>>>> getStudentRank();
+  @Operation(summary = "실시간 사진 랭킹 조회", description = "테마별 사진 득표수 랭킹을 조회합니다. (15일 15시 이후 비공개)")
+  ResponseEntity<ApiResponse<Map<String, List<PhotoRankResDto>>>> getStudentRank();
 }

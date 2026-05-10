@@ -1,5 +1,8 @@
 package com.ds.dsfest.domain.photocontest.controller;
 
+import java.util.List;
+import java.util.Map;
+
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
@@ -10,9 +13,6 @@ import com.ds.dsfest.domain.photocontest.service.PhotoContestService;
 import com.ds.dsfest.global.response.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -60,13 +60,11 @@ public class PhotoContestController implements PhotoContestControllerDocs {
     return ResponseEntity.ok(ApiResponse.onSuccess("투표가 성공적으로 완료되었습니다."));
   }
 
-    /**
-     * 실시간 사진 랭킹 조회 (일반 학생용)
-     */
-    @GetMapping("/rank")
-    @Override
-    public ResponseEntity<ApiResponse<Map<String, List<PhotoRankResDto>>>> getStudentRank() {
-        Map<String, List<PhotoRankResDto>> result = photoContestService.getVoteResults(false);
-        return ResponseEntity.ok(ApiResponse.onSuccess(result));
-    }
+  /** 실시간 사진 랭킹 조회 (일반 학생용) */
+  @GetMapping("/rank")
+  @Override
+  public ResponseEntity<ApiResponse<Map<String, List<PhotoRankResDto>>>> getStudentRank() {
+    Map<String, List<PhotoRankResDto>> result = photoContestService.getVoteResults(false);
+    return ResponseEntity.ok(ApiResponse.onSuccess(result));
+  }
 }
