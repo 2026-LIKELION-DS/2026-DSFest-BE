@@ -16,5 +16,5 @@ server:
   forward-headers-strategy: framework
 
 festival:
-  start-date: ${FESTIVAL_START_DATE:2026-05-09}
-  fake-now: ${FESTIVAL_FAKE_NOW:15:00:00}
+  start-date: ${FESTIVAL_START_DATE:2026-05-13}
+  fake-now: ${FESTIVAL_FAKE_NOW:}
