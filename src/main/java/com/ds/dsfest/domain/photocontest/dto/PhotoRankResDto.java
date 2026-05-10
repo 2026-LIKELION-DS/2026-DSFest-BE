@@ -6,6 +6,4 @@ public record PhotoRankResDto(
     String authorName,
     String theme,
     Long voteCount,
-    String imageUrl
-) {
-}
+    String imageUrl) {}

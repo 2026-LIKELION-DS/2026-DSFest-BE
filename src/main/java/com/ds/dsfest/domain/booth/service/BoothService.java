@@ -295,11 +295,6 @@ public class BoothService {
   }
 
   private String resolveStatusTag(Booth booth, LocalDateTime now) {
-    String text = booth.getOperatingDaysText();
-    if (text != null && !text.isBlank()) {
-      return TAG_RUNNING;
-    }
-
     LocalDate today = now.toLocalDate();
     LocalTime nowTime = now.toLocalTime();
     long diffDays = ChronoUnit.DAYS.between(festivalStartDate, today);

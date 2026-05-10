@@ -16,7 +16,7 @@ INSERT INTO booth_images (booth_id, image_order, image_url) VALUES
   (3, 1, 'https://lh3.googleusercontent.com/d/12egTkeaMmlQjCz9f4QpLAWeVNPcGQhE4=w1200'),  -- 3-1. 청춘 매치: 행운을 잡아라.png
   (3, 2, 'https://lh3.googleusercontent.com/d/1CPj6UYanmo8oE-M23I4kX3ZgkAStWwto=w1200'),  -- 3-2. 청춘매치: 행운을 잡아라.jpg
   (14, 1, 'https://lh3.googleusercontent.com/d/1BG6NYmBQP7AVh6ALAQqh-NphUXXZAw0y=w1200'),  -- 14. 옐로우 링크.jpeg
-  (21, 1, 'https://lh3.googleusercontent.com/d/1AnYyWBQBQ-RawMmQ-ndwDeVFX9iFTQJP=w1200'),  -- 21. 빠순희 소품샵.png
+  (21, 1, 'https://lh3.googleusercontent.com/d/14sBkBkFxwE33KxkEdkbr3Mb0USQCTaGn=w1200'),  -- 21. 빠순희 소품샵.png
   (22, 1, 'https://lh3.googleusercontent.com/d/1wCDhs3dUaBuT5qvD8ArVYAXly3GJ7fJu=w1200'),  -- 22-1. 과기대는 오락오락하지 않다.png
   (22, 2, 'https://lh3.googleusercontent.com/d/1Iliq1DCvsnZ6jdaKVHsxB3jPsoDnLn30=w1200'),  -- 22-2. 과기대는 오락오락하지 않다.jpg
   (22, 3, 'https://lh3.googleusercontent.com/d/1GA6T-jHHM4Zd-Wu75-cMAiDsDkO0iT-3=w1200'),  -- 22-3. 과기대는 오락오락하지 않다jpg
