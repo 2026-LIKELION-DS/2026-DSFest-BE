@@ -1,24 +1,5 @@
 package com.ds.dsfest.domain.notice.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.ds.dsfest.domain.notice.constant.NoticeCategory;
 import com.ds.dsfest.domain.notice.dto.NoticeCreateReqDto;
 import com.ds.dsfest.domain.notice.dto.NoticeDetailResDto;
@@ -30,6 +11,22 @@ import com.ds.dsfest.domain.notice.exception.NoticeErrorCode;
 import com.ds.dsfest.domain.notice.repository.NoticeRepository;
 import com.ds.dsfest.global.exception.CustomException;
 import com.ds.dsfest.global.infra.s3.S3Uploader;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class NoticeServiceTest {
@@ -158,7 +155,7 @@ class NoticeServiceTest {
   void searchNotices_empty_returnsRecommended() {
     Notice recommended = Notice.create("자주 찾는 공지", "내용", NoticeCategory.ETC, false);
     when(noticeRepository.searchByKeyword("없는키워드")).thenReturn(List.of());
-    when(noticeRepository.findTop4ByOrderByViewCountDescCreatedAtDesc())
+    when(noticeRepository.findTop5ByOrderByViewCountDescCreatedAtDesc())
         .thenReturn(List.of(recommended));
 
     NoticeSearchResDto result = noticeService.searchNotices("없는키워드");
@@ -178,7 +175,7 @@ class NoticeServiceTest {
 
     assertThat(result.results()).hasSize(1);
     assertThat(result.recommended()).isEmpty();
-    verify(noticeRepository, never()).findTop4ByOrderByViewCountDescCreatedAtDesc();
+    verify(noticeRepository, never()).findTop5ByOrderByViewCountDescCreatedAtDesc();
   }
 
   @Test

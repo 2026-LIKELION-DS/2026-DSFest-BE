@@ -41,6 +41,6 @@ public interface NoticeControllerDocs {
   ResponseEntity<ApiResponse<NoticeSearchResDto>> searchNotices(
       @RequestParam @NotBlank String keyword);
 
-  @Operation(summary = "자주 찾는 공지 조회", description = "조회수 상위 4개의 공지사항 목록을 반환합니다.")
+  @Operation(summary = "자주 찾는 공지 조회", description = "조회수 상위 5개의 공지사항 목록을 반환합니다.")
   ResponseEntity<ApiResponse<List<NoticeListItemResDto>>> getFrequentNotices();
 }
