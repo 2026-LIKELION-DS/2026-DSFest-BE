@@ -30,10 +30,10 @@ INSERT INTO booths
    youtube_url, operating_days_text, created_at, updated_at)
 VALUES
   (1, 1, '총학 운영 본부', '총학생회', '총학생회', '스태프 관리를 비롯한 근화제 전반 운영을 총괄합니다. 상시 운영할 예정이니 문의 사항이 있을 시 언제든 방문해 주시기 바랍니다! 
-더불어 총학생회비 납부자 대상으로 굿즈 배부도 진행될 예정입니다. 덕성과 근화를 담은 예쁜 카라비너도 준비되어 있으니 많은 관심 부탁드립니다.', 'http://pf.kakao.com/_gUyQn', NULL, 'https://www.instagram.com/journey_mode_duksung/', NULL, 'https://youtube.com/channel/UC2LzUL6q68TM0A449JwlxYg?si=4bHUJx2UEQjhMIez', '상시 운영', NOW(), NOW()),
+더불어 총학생회비 납부자 대상으로 굿즈 배부도 진행될 예정입니다. 덕성과 근화를 담은 예쁜 카라비너도 준비되어 있으니 많은 관심 부탁드립니다.', 'http://pf.kakao.com/_gUyQn', NULL, 'https://www.instagram.com/journey_mode_duksung/', NULL, 'https://youtube.com/channel/UC2LzUL6q68TM0A449JwlxYg?si=4bHUJx2UEQjhMIez', NULL, NOW(), NOW()),
   (2, 2, '청춘 스토어', '총학생회', '총학생회', '더욱 푸르게 기억될 <청춘>을 위해, 2026 근화제 한정판 굿즈를 제작하였습니다.
 유니폼, 슬로건, 안경닦이, 밴드, 스티커 등 다양한 굿즈를 만나보실 수 있습니다.
-또한, ‘낭만 충전소’와 ‘행복 충전소’에서 사용 가능한 돗자리와 테이블은 청춘 스토어에서 유료로 대여하실 수 있습니다.', 'http://pf.kakao.com/_gUyQn', NULL, 'https://www.instagram.com/journey_mode_duksung/', NULL, 'https://youtube.com/channel/UC2LzUL6q68TM0A449JwlxYg?si=4bHUJx2UEQjhMIez', '11:00~19:00', NOW(), NOW()),
+또한, ‘낭만 충전소’와 ‘행복 충전소’에서 사용 가능한 돗자리와 테이블은 청춘 스토어에서 유료로 대여하실 수 있습니다.', 'http://pf.kakao.com/_gUyQn', NULL, 'https://www.instagram.com/journey_mode_duksung/', NULL, 'https://youtube.com/channel/UC2LzUL6q68TM0A449JwlxYg?si=4bHUJx2UEQjhMIez', NULL, NOW(), NOW()),
   (3, 3, '청춘 매치: 행운을 잡아라', '총학생회', '총학생회', '<총학을 이겨라!>, <행운의 문장 쓰기>를 체험할 수 있는 총학생회 주관 참여형 부스입니다.
 프로그램 참여 시 야광팔찌를 무료로 제공하며, ‘총학을 이겨라!’에서 승리할 경우 비눗방울을 추가로 드립니다.
 두 프로그램에 모두 참여하시면 럭키드로우 응모 기회가 제공됩니다.
@@ -56,7 +56,7 @@ RISE사업단 지역상생 부스', '라이즈2', '라이즈2', 'RISE 사업단 
 <참여형 부스>
 - 퀴즈 이벤트  
 - 게시판 꾸미기 활동  
-참여자에게는 ‘옐로우블록 특성이 반영된 사은품’이 제공될 예정입니다.', 'https://open.kakao.com/o/sn6AHQqi', NULL, 'https://www.instagram.com/dswu_yellowblock/', NULL, NULL, '수/목 15:00~22:00', NOW(), NOW()),
+참여자에게는 ‘옐로우블록 특성이 반영된 사은품’이 제공될 예정입니다.', 'https://open.kakao.com/o/sn6AHQqi', NULL, 'https://www.instagram.com/dswu_yellowblock/', NULL, NULL, NULL, NOW(), NOW()),
   (15, 15, '강남브랜드안과 놀이와 상담이 공존하는 부스', '강남브랜드안과', '강남브랜드안과', '찬란하게 빛나는‘청춘’의 시간을 온전히 바라보고 느낄 수 있는 선명한 눈', NULL, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
   (16, 16, '서울베스트의료의원', '서울베스트의료의원', '서울베스트의료의원', '- 국가 무료 검진 안내
 - 대학검진 소개 혜택 안내
@@ -453,9 +453,8 @@ INSERT INTO booth_categories (booth_id, category_name) VALUES
   (76, '판매');
 
 -- booth_operating_days
--- 비정규 케이스 (1: 상시 운영, 2: 11~19, 14: 수/목 15~22)는
--- 표시용 booths.operating_days_text 와 함께,
--- DAY/NIGHT 양쪽 리스트에 노출되도록 16:00 경계로 분할한 행을 함께 둔다.
+-- 부스 1(09~22), 2(11~19), 14(수/목 15~22)는 DAY/NIGHT 양쪽 리스트에
+-- 노출되도록 16:00 경계로 분할해 두 행으로 시드한다.
 INSERT INTO booth_operating_days (booth_id, festival_day, start_time, end_time) VALUES
   (1, 1, '09:00:00', '16:00:00'),
   (1, 1, '16:00:00', '22:00:00'),

@@ -34,17 +34,12 @@ public record BoothListItemResDto(
             ? EnumSet.noneOf(BoothType.class)
             : EnumSet.copyOf(booth.getBoothTypes());
 
-    String operatingDaysText = booth.getOperatingDaysText();
     List<String> operatingTimes =
-        operatingDaysText != null && !operatingDaysText.isBlank()
-            ? List.of(operatingDaysText)
-            : operatingDays.stream()
-                .sorted(Comparator.comparing(BoothOperatingDay::getStartTime))
-                .map(
-                    od ->
-                        od.getStartTime().format(TIME_FMT) + "~" + od.getEndTime().format(TIME_FMT))
-                .distinct()
-                .toList();
+        operatingDays.stream()
+            .sorted(Comparator.comparing(BoothOperatingDay::getStartTime))
+            .map(od -> od.getStartTime().format(TIME_FMT) + "~" + od.getEndTime().format(TIME_FMT))
+            .distinct()
+            .toList();
 
     return new BoothListItemResDto(
         booth.getId(),
