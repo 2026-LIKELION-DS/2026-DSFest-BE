@@ -1,18 +1,14 @@
 package com.ds.dsfest.domain.photocontest.controller;
 
-import java.util.List;
-import java.util.Map;
-
-import jakarta.validation.Valid;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import com.ds.dsfest.domain.photocontest.dto.*;
 import com.ds.dsfest.domain.photocontest.service.PhotoContestService;
 import com.ds.dsfest.global.response.ApiResponse;
-
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,7 +39,9 @@ public class PhotoContestController implements PhotoContestControllerDocs {
     return ResponseEntity.ok(ApiResponse.onSuccess(result));
   }
 
-  /** 사진 콘테스트 출품작 목록 조회 주제별로 그룹화된 리스트를 반환합니다. */
+  /**
+   * 사진 콘테스트 출품작 목록 조회 주제별로 그룹화된 리스트를 반환합니다.
+   */
   @GetMapping
   @Override
   public ResponseEntity<ApiResponse<PhotoListResDto>> getPhotoList() {
@@ -63,8 +61,8 @@ public class PhotoContestController implements PhotoContestControllerDocs {
   /** 실시간 사진 랭킹 조회 (일반 학생용) */
   @GetMapping("/rank")
   @Override
-  public ResponseEntity<ApiResponse<Map<String, List<PhotoRankResDto>>>> getStudentRank() {
-    Map<String, List<PhotoRankResDto>> result = photoContestService.getVoteResults(false);
-    return ResponseEntity.ok(ApiResponse.onSuccess(result));
+  public ResponseEntity<ApiResponse<List<PhotoRankResDto>>> getStudentRank() {
+      List<PhotoRankResDto> result = photoContestService.getVoteResults(false);
+      return ResponseEntity.ok(ApiResponse.onSuccess(result));
   }
 }
