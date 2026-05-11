@@ -46,7 +46,7 @@ public class PhotoContestService {
             throw new CustomException(GlobalErrorCode.INVALID_INPUT);
         }
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(clock);
         PhotoContestStatus derivedStatus;
         if (now.isBefore(setting.getStartTime())) {
             derivedStatus = PhotoContestStatus.ACCEPTING;

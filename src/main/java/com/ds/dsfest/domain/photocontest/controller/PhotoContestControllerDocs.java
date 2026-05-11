@@ -23,10 +23,10 @@ public interface PhotoContestControllerDocs {
   ResponseEntity<ApiResponse<PhotoDetailResDto>> getPhotoDetail(
       @PathVariable(name = "photoEntryId") Long photoEntryId);
 
-    @Operation(summary = "사진 목록 조회", description = "출품된 사진 전체 목록을 조회합니다.")
+    @Operation(summary = "사진 목록 조회", description = "전체 출품작 목록을 조회합니다.")
     ResponseEntity<ApiResponse<PhotoListResDto>> getPhotoList();
 
-    @Operation(summary = "사진 투표하기", description = "사진에 투표합니다. (1인당 투표 가능 횟수 제한 확인 필요)")
+    @Operation(summary = "사진 투표하기", description = "사진 1장에 투표합니다. (1인 1회만 가능)")
     ResponseEntity<ApiResponse<String>> votePhotos(@Valid @RequestBody PhotoVoteReqDto reqDto);
 
     @Operation(summary = "실시간 사진 랭킹 조회", description = "전체 사진 득표수 랭킹을 조회합니다. (15일 15시~19시 비공개)")
