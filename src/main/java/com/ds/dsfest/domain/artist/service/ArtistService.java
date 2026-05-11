@@ -50,27 +50,21 @@ public class ArtistService {
 
   // 오늘 아티스트 조회
   public List<ArtistListResDto> getArtistsByToday() {
-    LocalDate today = LocalDate.now(festivalClock);
-    List<Artist> artists = artistRepository.findByPerformanceDateOrderByStartTimeAsc(today);
+      LocalDate today = LocalDate.now(festivalClock);
 
-    return artists.stream()
-        .map(
-            artist ->
-                ArtistListResDto.builder()
-                    .id(artist.getId())
-                    .name(artist.getName())
-                    .shortBio(artist.getShortBio())
-                    .imageUrl(artist.getImageUrl())
-                    .festivalDay(artist.getFestivalDay())
-                    .performanceDate(artist.getPerformanceDate())
-                    .startTime(artist.getStartTime())
-                    .endTime(artist.getEndTime())
-                    .instagramUrl(artist.getInstagramUrl())
-                    .youtubeUrl(artist.getYoutubeUrl())
-                    .playlistUrl(artist.getPlaylistUrl()) // ✅ 추가
-                    .countdownStatus(calculateCountdownStatus(artist))
-                    .build())
-        .toList();
+      int day;
+
+      if (today.equals(LocalDate.of(2026, 5, 13))) {
+          day = 1;
+      } else if (today.equals(LocalDate.of(2026, 5, 14))) {
+          day = 2;
+      } else if (today.equals(LocalDate.of(2026, 5, 15))) {
+          day = 3;
+      } else {
+          day = 1; // 축제 기간이 아니면 기본 Day1
+      }
+
+      return getArtistsByDay(day);
   }
 
   // 공연 상태 계산
