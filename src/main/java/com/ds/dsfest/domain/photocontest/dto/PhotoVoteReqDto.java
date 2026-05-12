@@ -1,9 +1,10 @@
 package com.ds.dsfest.domain.photocontest.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "사진 콘테스트 투표 요청 DTO")
 public record PhotoVoteReqDto(
@@ -13,6 +14,5 @@ public record PhotoVoteReqDto(
         String studentId,
     @Schema(description = "이름", example = "박덕우") @NotBlank(message = "이름을 입력해주세요.")
         String studentName,
-    @Schema(description = "선택한 사진 ID (1인 1표)", example = "1")
-        @NotNull(message = "투표할 사진을 선택해주세요.")
+    @Schema(description = "선택한 사진 ID (1인 1표)", example = "1") @NotNull(message = "투표할 사진을 선택해주세요.")
         Long photoEntryId) {}

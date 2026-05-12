@@ -6,9 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ds.dsfest.domain.user.dto.GuestUserReqDto;
 import com.ds.dsfest.domain.user.dto.GuestUserResDto;
 import com.ds.dsfest.domain.user.service.GuestUserService;
 import com.ds.dsfest.global.response.ApiResponse;
@@ -23,8 +25,10 @@ public class GuestUserController implements GuestUserControllerDocs {
   private final GuestUserService guestUserService;
 
   @PostMapping
-  public ResponseEntity<ApiResponse<GuestUserResDto>> createGuestUser() {
-    return ResponseEntity.ok(ApiResponse.onSuccess(guestUserService.createGuestUser()));
+  public ResponseEntity<ApiResponse<GuestUserResDto>> createGuestUser(
+      @RequestBody(required = false) GuestUserReqDto req) {
+    String uuid = req != null ? req.uuid() : null;
+    return ResponseEntity.ok(ApiResponse.onSuccess(guestUserService.createOrGet(uuid)));
   }
 
   @GetMapping("/{uuid}")

@@ -50,21 +50,21 @@ public class ArtistService {
 
   // 오늘 아티스트 조회
   public List<ArtistListResDto> getArtistsByToday() {
-      LocalDate today = LocalDate.now(festivalClock);
+    LocalDate today = LocalDate.now(festivalClock);
 
-      int day;
+    int day;
 
-      if (today.equals(LocalDate.of(2026, 5, 13))) {
-          day = 1;
-      } else if (today.equals(LocalDate.of(2026, 5, 14))) {
-          day = 2;
-      } else if (today.equals(LocalDate.of(2026, 5, 15))) {
-          day = 3;
-      } else {
-          day = 1; // 축제 기간이 아니면 기본 Day1
-      }
+    if (today.equals(LocalDate.of(2026, 5, 13))) {
+      day = 1;
+    } else if (today.equals(LocalDate.of(2026, 5, 14))) {
+      day = 2;
+    } else if (today.equals(LocalDate.of(2026, 5, 15))) {
+      day = 3;
+    } else {
+      day = 1; // 축제 기간이 아니면 기본 Day1
+    }
 
-      return getArtistsByDay(day);
+    return getArtistsByDay(day);
   }
 
   // 공연 상태 계산

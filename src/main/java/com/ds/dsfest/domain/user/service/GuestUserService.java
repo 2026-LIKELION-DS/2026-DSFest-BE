@@ -22,9 +22,23 @@ public class GuestUserService {
   private final GuestUserRepository guestUserRepository;
   private final GuestUserMapper guestUserMapper;
 
-  public GuestUserResDto createGuestUser() {
-    GuestUser guestUser = guestUserRepository.save(GuestUser.create());
-    return guestUserMapper.toResDto(guestUser);
+  public GuestUserResDto createOrGet(String uuidStr) {
+    if (uuidStr == null
+        || uuidStr.isBlank()
+        || uuidStr.equals("undefined")
+        || uuidStr.equals("null")) {
+      return guestUserMapper.toResDto(guestUserRepository.save(GuestUser.create()));
+    }
+    try {
+      UUID uuid = UUID.fromString(uuidStr);
+      GuestUser guestUser =
+          guestUserRepository
+              .findById(uuid)
+              .orElseGet(() -> guestUserRepository.save(GuestUser.create()));
+      return guestUserMapper.toResDto(guestUser);
+    } catch (IllegalArgumentException e) {
+      return guestUserMapper.toResDto(guestUserRepository.save(GuestUser.create()));
+    }
   }
 
   @Transactional(readOnly = true)
